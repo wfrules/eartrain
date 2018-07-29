@@ -6,7 +6,21 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  created(){
+    window.onload = function () {
+      MIDI.loadPlugin({
+              soundfontUrl: "./static/soundfont/",
+              instrument: "acoustic_grand_piano",
+              onprogress: function(state, progress) {
+//                console.log(state, progress);
+              },
+              onsuccess: function() {
+
+              }
+            });
+    };
+  }
 }
 </script>
 
