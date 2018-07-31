@@ -1,5 +1,6 @@
 <template>
     <div>
+      <input type='text' v-model="noteval"/>{{note}}
       <button v-for="quest in questions" @click="play(quest)">{{quest}}</button>
         <button  @click='shuffle'>shuffle</button>
     </div>
@@ -11,7 +12,13 @@
     export default {
         name: 'Train',
         created(){
+          console.log(_common.getNote(7, 1));
           this.shuffle();
+        },
+        computed: {
+          note(){
+            return _common.getNote(this.noteval, 0);
+          }
         },
         methods: {
             shuffle(){
@@ -35,6 +42,7 @@
         },
         data() {
             return {
+              noteval: 1,              
               regular: [1,2,3,4,5,6,7,8],
                questions: [],
                 msg: 'Welcome to Your Vue.js App'
