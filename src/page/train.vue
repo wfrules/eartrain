@@ -1,6 +1,9 @@
 <template>
     <div>
-      <input type='text' v-model="noteval"/>{{note}}
+      <input type='number' v-model.number="noteval"/>
+      <input type='number' v-model.number="offset"/>
+      {{note}}
+
       <button v-for="quest in questions" @click="play(quest)">{{quest}}</button>
         <button  @click='shuffle'>shuffle</button>
     </div>
@@ -17,7 +20,7 @@
         },
         computed: {
           note(){
-            return _common.getNote(this.noteval, 0);
+            return _common.getNote(this.noteval, this.offset);
           }
         },
         methods: {
@@ -32,7 +35,7 @@
             },
             play(quest){
                 var delay = 0; // play one note every quarter second
-                var note = _common.regular[quest];
+                var note = _common.getNote(quest, 0).val;
                 var velocity = 127; // how hard the note hits
                 // play the note
                 MIDI.setVolume(0, 127);
@@ -42,8 +45,8 @@
         },
         data() {
             return {
+              offset: 0,
               noteval: 1,              
-              regular: [1,2,3,4,5,6,7,8],
                questions: [],
                 msg: 'Welcome to Your Vue.js App'
             }
