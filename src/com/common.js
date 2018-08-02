@@ -79,7 +79,7 @@ let _getTitleFromVal = function (val, sign){
                 {
                     if (_listStand[i - 1] == iVal)
                     {
-                        objRet.val = i - 2;
+                        objRet.val = i;
                         objRet.sign = _SIGN.Normal;
                         console.log(objRet, 'down get');
                         break;
