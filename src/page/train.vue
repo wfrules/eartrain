@@ -2,7 +2,7 @@
     <div>
       {{note}}
         <note :params="{val:60, flag:0}"></note>
-      <button v-for="quest in questions" @click="play(quest)">{{quest}}</button>
+        <note v-for="(quest,index) in questions" :params="getNoteParams(quest)"  :key="index"></note>
         <button  @click='shuffle'>shuffle</button>
     </div>
 </template>
@@ -25,6 +25,11 @@
           }
         },
         methods: {
+            getNoteParams(quest){
+              let objRet = {val: _common.getNote(quest, 0).val,
+                flag: _common.sign.Normal};
+              return objRet;
+            },
             shuffle(){
               let arrQuests = [];
               for(let i = 0; i < _questLen; i++)
@@ -34,22 +39,12 @@
               }
               this.questions = arrQuests;
             },
-            play(quest){
-                var delay = 0; // play one note every quarter second
-                var note = _common.getNote(quest, 0).val;
-                var velocity = 127; // how hard the note hits
-                // play the note
-                MIDI.setVolume(0, 127);
-                MIDI.noteOn(0, note, velocity, delay);
-                MIDI.noteOff(0, note, delay + 0.75);
-            }
         },
         data() {
-            return {
+            return {   
               offset: 0,
               noteval: 1,              
                questions: [],
-                msg: 'Welcome to Your Vue.js App'
             }
         }
     }

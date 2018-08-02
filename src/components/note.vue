@@ -1,10 +1,12 @@
 <template>
     <div>
-        <input type='number' v-model.number="val"/>
-        <span>{{flag}}</span>
-        <div class='noteFrame'>
+        <div class="adjuster">
+          <input type='number' v-model.number="val"/>
+          <span>{{flag}}</span>
+        </div>  
+        <div class='noteFrame' @click="play">
             <div class="noteTimesTitle">{{noteObj.timesTitle}}</div>
-            <div class="notebtn" @click="play">{{noteObj.title}}</div>          
+            <div class="notebtn">{{noteObj.title}}</div>          
         </div>        
     </div>
 </template>
@@ -98,6 +100,9 @@
 </script>
 
 <style scoped>
+    .adjuster {
+      background-color: blue,
+    }
     .noteFrame {
         display: inline-block;
         width: 40px;
