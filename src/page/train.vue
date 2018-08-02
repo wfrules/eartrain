@@ -3,20 +3,23 @@
       <input type='number' v-model.number="noteval"/>
       <input type='number' v-model.number="offset"/>
       {{note}}
-
+        <note></note>
       <button v-for="quest in questions" @click="play(quest)">{{quest}}</button>
         <button  @click='shuffle'>shuffle</button>
     </div>
 </template>
 
 <script>
-    import _common from '@/com/common'
+    import _common from '@/com/common';
+    import note from '@/components/note';
     const _questLen = 6;
     export default {
         name: 'Train',
         created(){
-          console.log(_common.getNote(7, 1));
           this.shuffle();
+        },
+        components: {
+            note
         },
         computed: {
           note(){
