@@ -10,7 +10,7 @@ let _Tmp = [
 /**
  * Created by Administrator on 2018/7/29 0029.
  */
-let _base = 48;
+
 
 let _listStand = [
     0, 2, 4, 5, 7, 9, 11
@@ -27,14 +27,14 @@ let _getNote = function(noteVal, offset){//计算
   let iRe =  _listStand[iRemain] + offset;
   let iTimes = Math.floor((noteVal + offset - 1) / 7);
   return {
-    val: _base + iRe + 12 * iTimes,
+    val: this.base + iRe + 12 * iTimes,
     stand: noteVal % 7,
   }
 };
 
 let _getTitleFromVal = function (val, sign){
-    let iVal = (val - _base)  % 12;
-    let objRet = {};
+    let iVal = (val - this.base)  % 12;
+    let objRet = {times: Math.floor((val-this.base)/12)};
     switch (sign)
     {
         case _SIGN.Normal:
@@ -45,7 +45,6 @@ let _getTitleFromVal = function (val, sign){
                 {
                     objRet.val = i+ 1;
                     objRet.sign = _SIGN.Normal;
-                    console.log(objRet, 'match');
                     break;
                 }
                 else if ((_listStand[i] < iVal))
@@ -72,7 +71,6 @@ let _getTitleFromVal = function (val, sign){
                 {
                     objRet.val = i + 1;
                     objRet.sign = _SIGN.Normal;
-                    console.log(objRet, 'match');
                     break;
                 }
                 else if ((_listStand[i] > iVal))
@@ -81,39 +79,24 @@ let _getTitleFromVal = function (val, sign){
                     {
                         objRet.val = i;
                         objRet.sign = _SIGN.Normal;
-                        console.log(objRet, 'down get');
                         break;
                     }
                     else if (_listStand[i - 1] < iVal)
                     {
                         objRet.val = i + 1;
                         objRet.sign = _SIGN.Minus;
-                        console.log(objRet, 'between ');
                         break;
                     }
                 }
             }
             break;
     }
-    let sTitle = '';
-    switch(objRet.sign)
-    {
-        case _SIGN.Normal:
-            sTitle = objRet.val;
-            break;
-        case _SIGN.Plus:
-            sTitle = objRet.val + '#';
-            break;
-        case _SIGN.Minus:
-            sTitle = 'b' + objRet.val;
-            break;
-    }
-    return sTitle;
+    return objRet;
 };
 
 let common = {
   sign:  _SIGN,
-  base: _base,
+  base: 48,
   getNote: _getNote,
   randomNumBoth: function(Min,Max){
     var Range = Max - Min;

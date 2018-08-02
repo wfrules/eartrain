@@ -1,9 +1,7 @@
 <template>
     <div>
-      <input type='number' v-model.number="noteval"/>
-      <input type='number' v-model.number="offset"/>
       {{note}}
-        <note></note>
+        <note :params="{val:60, flag:0}"></note>
       <button v-for="quest in questions" @click="play(quest)">{{quest}}</button>
         <button  @click='shuffle'>shuffle</button>
     </div>
