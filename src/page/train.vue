@@ -4,6 +4,10 @@
             <note v-for="(quest,index) in questions" :params.sync="quest"  :key="index"></note>
         </div>
         <button  @click='shuffle'>shuffle</button>
+        <button  @click='reveal'>reveal</button>
+        <div class="keyboard">
+            <note v-for="(key,index) in keyboards" :params.sync="key"  :key="index" @play="notePlay(key)"></note>
+        </div>
     </div>
 </template>
 
@@ -20,6 +24,14 @@
             note
         },
         methods: {
+            reveal(){
+              this.questions.forEach(quest=>{
+                 quest.hidding = false;
+              });
+            },
+            notePlay(note){
+                console.log(note);
+            },
             getNoteParams(quest){
               let objRet = {val: _common.getNote(quest, 0).val,
                 flag: _common.sign.Normal};
@@ -31,15 +43,24 @@
               {
                 let iNote = _common.randomNumBoth(1, 8);
                 let objNote = {val: _common.getNote(iNote, 0).val,
-                  flag: _common.sign.Normal};
+                  flag: _common.sign.Normal, hidding: true};
                 arrQuests.push(objNote);
               }
               this.questions = arrQuests;
+              let arrKeyboards = [];
+                for(let i = 1; i <= 7; i++)
+                {
+                    let objNote = {val: _common.getNote(i, 0).val,
+                        flag: _common.sign.Normal, hidding: false};
+                    arrKeyboards.push(objNote);
+                }
+                this.keyboards = arrKeyboards;
             },
         },
         data() {
             return {
                questions: [],
+               keyboards: [],
             }
         }
     }
@@ -49,5 +70,12 @@
 <style scoped>
     .questList{
         display: flex;
+    }
+    ul,li{ padding:0;margin:0;list-style:none}
+    .keyboard{
+        display: flex;
+    }
+    .key {
+        border: 1px solid;
     }
 </style>
