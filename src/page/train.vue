@@ -1,8 +1,6 @@
 <template>
     <div>
-      {{note}}
-        <note :params="{val:60, flag:0}"></note>
-        <note v-for="(quest,index) in questions" :params="getNoteParams(quest)"  :key="index"></note>
+        <note v-for="(quest,index) in questions" :params.sync="quest"  :key="index"></note>
         <button  @click='shuffle'>shuffle</button>
     </div>
 </template>
@@ -19,11 +17,6 @@
         components: {
             note
         },
-        computed: {
-          note(){
-            return _common.getNote(this.noteval, this.offset);
-          }
-        },
         methods: {
             getNoteParams(quest){
               let objRet = {val: _common.getNote(quest, 0).val,
@@ -35,15 +28,15 @@
               for(let i = 0; i < _questLen; i++)
               {
                 let iNote = _common.randomNumBoth(1, 8);
-                arrQuests.push(iNote);
+                let objNote = {val: _common.getNote(iNote, 0).val,
+                  flag: _common.sign.Normal};
+                arrQuests.push(objNote);
               }
               this.questions = arrQuests;
             },
         },
         data() {
-            return {   
-              offset: 0,
-              noteval: 1,              
+            return {
                questions: [],
             }
         }

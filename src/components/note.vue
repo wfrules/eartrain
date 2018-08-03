@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="adjuster">
-          <input type='number' v-model.number="val"/>
-          <span>{{flag}}</span>
+          <input type='number' v-model.number="params.val"/>
+          <span>{{params.flag}}</span>
         </div>  
         <div class='noteFrame' @click="play">
             <div class="noteTimesTitle">{{noteObj.timesTitle}}</div>
@@ -19,29 +19,19 @@
           params:{
             type: Object,
             required: true,
-            default: {
-              val: _common.base, 
-              flag: _common.sign.Normal
-            }
           },         
         },
-        created(){
-            this.creatting = true;
-            this.val = this.params.val;
-            this.flag = this.params.flag;
-            this.creatting = false;
-        },
         watch: {
-          val(newVal){            
-            // if (!this.creatting)
-            // {
-            //   this.play();
-            // }
-          }
+            params: {
+                handler: function (val, oldVal) {
+                    this.$emit('update:params', val)
+                },
+                deep: true,
+            },
         },
         computed: {
           noteObj(){
-              return this.getNote(_common.getTitleFromVal(this.val, this.flag));
+              return this.getNote(_common.getTitleFromVal(this.params.val, this.params.flag));
           }
         },
         methods: {
@@ -81,7 +71,7 @@
           },
           play(){
               var delay = 0; // play one note every quarter second
-              var note = this.val;
+              var note = this.params.val;
               var velocity = 127; // how hard the note hits
               // play the note
               MIDI.setVolume(0, 127);
@@ -91,9 +81,7 @@
         },
         data() {
             return {
-                creatting: false,
-                val: _common.base,
-                flag: _common.sign.Plus,
+
             }
         }
     }
@@ -104,6 +92,7 @@
       background-color: blue,
     }
     .noteFrame {
+        border: 1px solid;
         display: inline-block;
         width: 40px;
         height: 40px;
