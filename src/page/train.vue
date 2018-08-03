@@ -1,6 +1,8 @@
 <template>
     <div>
-        <note v-for="(quest,index) in questions" :params.sync="quest"  :key="index"></note>
+        <div class="questList">
+            <note v-for="(quest,index) in questions" :params.sync="quest"  :key="index"></note>
+        </div>
         <button  @click='shuffle'>shuffle</button>
     </div>
 </template>
@@ -45,5 +47,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+    .questList{
+        display: flex;
+    }
 </style>
