@@ -105,5 +105,21 @@ let common = {
     return num;
   },
   getTitleFromVal: _getTitleFromVal,
+  play(noteVal, params){
+    var delay = params.delay || 0; // play one note every quarter second
+    var velocity = 127; // how hard the note hits
+    // play the note
+    MIDI.setVolume(0, 127);
+    MIDI.noteOn(0, noteVal, velocity, delay);
+    MIDI.noteOff(0, noteVal, delay + 0.75);  
+
+// MIDI.noteOn(channel, note, velocity, delay);
+// MIDI.noteOff(channel, note, delay);
+// MIDI.chordOn(channel, [note, note, note], velocity, delay);
+// MIDI.chordOff(channel, [note, note, note], delay);
+// MIDI.keyToNote = object; // A0 => 21
+// MIDI.noteToKey = object; // 21 => A0
+
+  }
 }
 export default common;

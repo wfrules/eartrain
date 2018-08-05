@@ -41,8 +41,7 @@
             },
             getMainBtnStyle(){
                 let objStyle = {
-                    position: 'relative',
-                    border: '1px solid',
+                    position: 'relative',                    
                     display: 'inline-block',
                     width: '50px',
                     height: '50px'
@@ -95,13 +94,7 @@
 
             },
             play() {
-                var delay = 0; // play one note every quarter second
-                var note = this.params.val;
-                var velocity = 127; // how hard the note hits
-                // play the note
-                MIDI.setVolume(0, 127);
-                MIDI.noteOn(0, note, velocity, delay);
-                MIDI.noteOff(0, note, delay + 0.75);
+                _common.play(this.params.val,{});
                 this.$emit('play');
             },
         },
@@ -116,6 +109,7 @@
 
 <style scoped>
     .mainFrame {
+        border: 1px solid;
         position: relative;
     }
 
