@@ -1,10 +1,10 @@
 <template>
-    <div class="mainFrame">
+    <div :style="getFrameStyle()"  @click="play"  @touchstart="touchStart"  @touchend="touchEnd">
         <div class="adjuster" v-show="showAdjuster">
             <input class="adjInput" type='number' v-model.number="params.val" min="48" max="60"/>
             <span>{{params.flag}}</span>
         </div>
-        <div :style="getMainBtnStyle()" @click="play" @touchstart="touchStart"  @touchend="touchEnd">
+        <div :style="getMainBtnStyle()">
             <!--<div class="noteTimesTitle">{{noteObj.timesTitle}}</div>-->
             <div :class="getNoteClass()">{{getTitle()}}</div>
         </div>
@@ -38,6 +38,14 @@
         methods: {
             getTitle(){
                 return (this.params.hidding)?"?":this.noteObj.val;
+            },
+            getFrameStyle(){
+                let objFrameStyle = {
+                  position: 'relative',
+                  margin: '5px',
+                };
+                objFrameStyle.border = (this.params.active)?'1px solid red':'1px solid black';
+                return objFrameStyle;
             },
             getMainBtnStyle(){
                 let objStyle = {
@@ -94,8 +102,9 @@
 
             },
             play() {
+                this.params.active = !this.params.active;
                 _common.play(this.params.val,{});
-                this.$emit('play');
+                this.$emit('click');
             },
         },
         data() {
@@ -107,12 +116,7 @@
     }
 </script>
 
-<style scoped>
-    .mainFrame {
-        border: 1px solid;
-        position: relative;
-    }
-
+<style scoped>    
     .adjuster {
         width: 40px;
         background-color: blue;

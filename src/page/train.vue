@@ -1,34 +1,37 @@
 <template>
     <div>
-        <div class="questList">
-            <note v-for="(quest,index) in questions" :params.sync="quest"  :key="index"></note>
-        </div>
+        <notegroup :notes.sync="questions" ></notegroup>
         <div class='btnbar'>
           <button  @click='play' :disabled='!canPlay()'>play</button>
           <button  @click='shuffle'>shuffle</button>
           <button  @click='reveal'>reveal</button>
           <button  @click='toggleStandard'>>></button>
         </div>
-        <div class='row'>
-          <div class='key colleft'>1</div><div class='key colright'>2</div>
-        </div>
-        <div class='row'>
-          <div class='key colleft'>3</div><div class='key colright'>4</div>
-        </div>
-        <div class='row'>
-          <div class='key colleft'>5</div><div class='key colright'>6</div>
-        </div>        
-        <div class='row'>
-          <div class='key colleft'>b</div><div class='key colright'>#</div>
-        </div>                
-        <div class='row'>
-          <div class='key colleft'>-8</div><div class='key colright'>+8</div>
-        </div>     
-        <div class='row'>
-          <div class='key colleft'>←</div><div class='key colright'>→</div>
-        </div>                     
+        <ul>
+          <li class='row'>
+            <div class='key colleft' @click='keyClick(1)'>1</div><div class='key colright'  @click='keyClick(2)'>2</div>
+          </li>
+          <li class='row'>
+            <div class='key colleft' @click='keyClick(3)'>3</div><div class='key colright'  @click='keyClick(4)'>4</div>
+          </li>
+          <li class='row'>
+            <div class='key colleft' @click='keyClick(5)'>5</div><div class='key colright'  @click='keyClick(6)'>6</div>
+          </li>
+          <li class='row'>
+            <div class='key colleft' @click='keyClick(7)'>7</div><div class='key colright' @click='keyClick(8)'>i</div>
+          </li>          
+          <li class='row'>
+            <div class='key colleft'>b</div><div class='key colright'>#</div>
+          </li>                
+          <li class='row'>
+            <div class='key colleft'>-8</div><div class='key colright'>+8</div>
+          </li>     
+          <li class='row'>
+            <div class='key colleft'>←</div><div class='key colright'>→</div>
+          </li>  
+        </ul>                   
         <div class="standard" v-if="showStandard">
-            <note v-for="(key,index) in keyboards" :params.sync="key"  :key="index" @play="notePlay(key)"></note>
+            <note v-for="(key,index) in standards" :params.sync="key"  :key="index" @play="notePlay(key)"></note>
         </div>
     </div>
 </template>
@@ -36,7 +39,7 @@
 <script>
     let moment = require('moment');  
     import _common from '@/com/common';    
-    import note from '@/components/note';    
+    import notegroup from '@/components/notegroup'; 
     const _questLen = 6;
     export default {
         name: 'Train',
@@ -51,9 +54,16 @@
           this.shuffle();
         },
         components: {
-            note
+            notegroup
         },
         methods: {
+            questClick(index){
+                alert(index);
+            },
+            keyClick(key){
+                alert(key);
+            },
+
             toggleStandard(){
               this.showStandard = !this.showStandard;
             },
@@ -89,24 +99,24 @@
               {
                 let iNote = _common.randomNumBoth(1, 8);
                 let objNote = {val: _common.getNote(iNote, 0).val,
-                  flag: _common.sign.Normal, hidding: true};
+                  flag: _common.sign.Normal, hidding: true, active: false};
                 arrQuests.push(objNote);
               }
               this.questions = arrQuests;
-              let arrKeyboards = [];
+              let arrStandards = [];
                 for(let i = 1; i <= 7; i++)
                 {
                     let objNote = {val: _common.getNote(i, 0).val,
                         flag: _common.sign.Normal, hidding: false};
-                    arrKeyboards.push(objNote);
+                    arrStandards.push(objNote);
                 }
-                this.keyboards = arrKeyboards;
+                this.standards = arrStandards;
             },
         },
         data() {
             return {
                questions: [],
-               keyboards: [],
+               keyboards: [1,2,3,4,5,6,7],
                play_end_at: moment().format('YYYY-MM-DD hh:mm:ss'),
                now: moment().format('YYYY-MM-DD hh:mm:ss'),
                timerCheck: 0,
