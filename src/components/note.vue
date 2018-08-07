@@ -6,7 +6,7 @@
         </div>
         <div :style="getMainBtnStyle()">
             <!--<div class="noteTimesTitle">{{noteObj.timesTitle}}</div>-->
-            <div :class="getNoteClass()">{{getTitle()}}</div>
+            <div :class="getNoteClass()">{{params.display}}</div>
         </div>
     </div>
 </template>
@@ -32,12 +32,15 @@
         },
         computed: {
             noteObj() {
-                return _common.getTitleFromVal(this.params.val, this.params.flag);
+                return _common.getTitleFromVal(this.params.val, this.params.flag).val;
             }
         },
         methods: {
+            reveal(){
+              alert('x');
+            },
             getTitle(){
-                return (this.params.hidding)?"?":this.noteObj.val;
+                return this.params.display;
             },
             getFrameStyle(){
                 let objFrameStyle = {
@@ -67,22 +70,19 @@
                 let objStyle = {
                     notebtn: true,
                 };
-                if (!this.params.hidding)
-                {
-                    switch (this.noteObj.sign) {
-                        case _common.sign.Plus:
-                            objStyle.rise = true;
-                            break;
-                        case _common.sign.Minus:
-                            objStyle.fall = true;
-                            break;
-                    }
-                    if (this.noteObj.times > 0) {
-                        objStyle.upper = true;
-                    }
-                    else if (this.noteObj.times < 0) {
+                switch (this.noteObj.sign) {
+                    case _common.sign.Plus:
+                        objStyle.rise = true;
+                        break;
+                    case _common.sign.Minus:
+                        objStyle.fall = true;
+                        break;
+                }
+                if (this.noteObj.times > 0) {
+                    objStyle.upper = true;
+                }
+                else if (this.noteObj.times < 0) {
 
-                    }
                 }
                 return objStyle;
             },
@@ -102,8 +102,9 @@
 
             },
             play() {
-                this.params.active = !this.params.active;
+                // this.params.active = !this.params.active;    
                 _common.play(this.params.val,{});
+                
                 this.$emit('click');
             },
         },

@@ -1,8 +1,9 @@
 <template>
     <div>
-        <notegroup :notes.sync="questions" ></notegroup>
+        <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <div class='btnbar'>
           <button  @click='play' :disabled='!canPlay()'>play</button>
+          <button  @click='stop' >stop</button>
           <button  @click='shuffle'>shuffle</button>
           <button  @click='reveal'>reveal</button>
           <button  @click='toggleStandard'>>></button>
@@ -57,11 +58,14 @@
             notegroup
         },
         methods: {
+            stop(){
+              _common.stop();
+            },
             questClick(index){
                 alert(index);
             },
             keyClick(key){
-                alert(key);
+                this.$refs.ng.setVal(key)
             },
 
             toggleStandard(){
@@ -81,9 +85,7 @@
               this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD hh:mm:ss');
             },
             reveal(){
-              this.questions.forEach(quest=>{
-                 quest.hidding = false;
-              });
+              this.$refs.ng.reveal();
             },
             notePlay(note){
                 console.log(note);
@@ -99,7 +101,7 @@
               {
                 let iNote = _common.randomNumBoth(1, 8);
                 let objNote = {val: _common.getNote(iNote, 0).val,
-                  flag: _common.sign.Normal, hidding: true, active: false};
+                  flag: _common.sign.Normal, display: '?', active: i == 0};
                 arrQuests.push(objNote);
               }
               this.questions = arrQuests;
@@ -107,7 +109,7 @@
                 for(let i = 1; i <= 7; i++)
                 {
                     let objNote = {val: _common.getNote(i, 0).val,
-                        flag: _common.sign.Normal, hidding: false};
+                        flag: _common.sign.Normal, display: i};
                     arrStandards.push(objNote);
                 }
                 this.standards = arrStandards;

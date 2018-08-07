@@ -105,6 +105,11 @@ let common = {
     return num;
   },
   getTitleFromVal: _getTitleFromVal,
+  stop(){
+    MIDI.stopAllNotes();
+    return;
+    MIDI.player.stop();
+  },
   play(noteVal, params){
     var delay = params.delay || 0; // play one note every quarter second
     var velocity = 127; // how hard the note hits
