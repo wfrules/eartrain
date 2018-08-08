@@ -1,6 +1,6 @@
 <template>
     <div class="questList">
-        <note v-for="(note,index) in notes" :params.sync="note"  :key="index" @click="noteClick(index)" :ref="index"></note>
+        <note v-for="(note,index) in notes" :params.sync="note"  :key="index" @click="noteClick(index)" :ref="'note'+ index"></note>
     </div>
 </template>
 
@@ -31,9 +31,12 @@
         },                    
         methods: {
             reveal(){
-                for(let i = 0; i < this.$refs.length; i++)
+                for (let i = 0; i < this.$props.notes.length; i++)
                 {
-                    this.$refs[i].reveal();
+                    let objNoteData = this.$props.notes[i];
+                    objNoteData.display =  _common.getTitleFromVal(objNoteData.val, objNoteData.flag).val;
+                    
+                    // this.$refs['note'+ i].reveal();
                 }
             },
             setVal(key){
@@ -45,7 +48,7 @@
                     case 5:
                     case 6:
                     case 7:
-                        this.$props.notes[this.activeIndex].val = _common.getNote(key, 0).val;
+                        this.$props.notes[this.activeIndex].display = key;//_common.getNote(key, 0).val;
                         break;
                 }
             },
