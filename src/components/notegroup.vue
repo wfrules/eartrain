@@ -34,7 +34,7 @@
                 for (let i = 0; i < this.$props.notes.length; i++)
                 {
                     let objNoteData = this.$props.notes[i];
-                    objNoteData.display =  _common.getTitleFromVal(objNoteData.val, objNoteData.flag).val;
+                    objNoteData.display =  this.$props.notes[i].val;
                     
                     // this.$refs['note'+ i].reveal();
                 }

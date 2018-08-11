@@ -98,6 +98,30 @@ let common = {
   sign:  _SIGN,
   base: 48,
   getNote: _getNote,
+  getValFromParams(params){//从曲谱对象获得实际值
+    let iVal = this.base;
+    for(let i = 2; i <= params.val; i++)
+    {
+        if(i == 4)
+        {
+            iVal = iVal + 1;
+        }
+        else 
+        {
+            iVal = iVal + 2;
+        }
+    }
+    switch (params.sign) {
+        case this.sign.Plus:
+            iVal++;
+            break;
+        case this.sign.Minus:
+            iVal--;
+            break;
+    }
+    iVal += params.times * 12;
+    return iVal;
+  },
   randomNumBoth: function(Min,Max){
     var Range = Max - Min;
     var Rand = Math.random();

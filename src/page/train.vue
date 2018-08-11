@@ -99,9 +99,14 @@
               let arrQuests = [];
               for(let i = 0; i < _questLen; i++)
               {
-                let iNote = _common.randomNumBoth(1, 8);
-                let objNote = {val: _common.getNote(iNote, 0).val,
-                  flag: _common.sign.Normal, display: '?', active: i == 0};
+                let iNote = _common.randomNumBoth(1, 7);
+                let objNote = {
+                  val: iNote,
+                  times: 0,
+                  flag: _common.sign.Normal, 
+                  display: '?', 
+                  active: i == 0
+                };
                 arrQuests.push(objNote);
               }
               this.questions = arrQuests;

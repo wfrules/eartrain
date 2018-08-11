@@ -1,9 +1,9 @@
 <template>
     <div :style="getFrameStyle()"  @click="play"  @touchstart="touchStart"  @touchend="touchEnd">
-        <div class="adjuster" v-show="showAdjuster">
+<!--         <div class="adjuster" v-show="showAdjuster">
             <input class="adjInput" type='number' v-model.number="params.val" min="48" max="60"/>
             <span>{{params.flag}}</span>
-        </div>
+        </div> -->
         <div :style="getMainBtnStyle()">
             <div :class="getNoteClass()">{{params.display}}</div>
         </div>
@@ -30,8 +30,8 @@
             },
         },
         computed: {
-            noteObj() {
-                return _common.getTitleFromVal(this.params.val, this.params.flag).val;
+            actualVal() {
+                return _common.getValFromParams(this.params);
             }
         },
         methods: {
@@ -69,7 +69,7 @@
                 let objStyle = {
                     notebtn: true,
                 };
-                switch (this.noteObj.sign) {
+                switch (this.params.sign) {
                     case _common.sign.Plus:
                         objStyle.rise = true;
                         break;
@@ -77,11 +77,11 @@
                         objStyle.fall = true;
                         break;
                 }
-                if (this.noteObj.times > 0) {
+                if (this.params.times > 0) {
                     objStyle.upper = true;
                 }
-                else if (this.noteObj.times < 0) {
-
+                else if (this.params.times < 0) {
+                    objStyle.lower = true;
                 }
                 return objStyle;
             },
@@ -102,7 +102,7 @@
             },
             play() {
                 // this.params.active = !this.params.active;    
-                _common.play(this.params.val,{});
+                _common.play(this.actualVal,{});
                 
                 this.$emit('click');
             },
@@ -139,10 +139,17 @@
         margin-top: 25%;
     }
 
-    .upper:before {
+    .upper:after {
         content: '.';
         position: absolute;
         top: -5px;
+        left: 23px;
+    }
+
+    .lower:after {
+        content: '.';
+        position: absolute;
+        top: 20px;
         left: 23px;
     }
 
