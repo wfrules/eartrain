@@ -5,7 +5,6 @@
             <span>{{params.flag}}</span>
         </div>
         <div :style="getMainBtnStyle()">
-            <!--<div class="noteTimesTitle">{{noteObj.timesTitle}}</div>-->
             <div :class="getNoteClass()">{{params.display}}</div>
         </div>
     </div>
