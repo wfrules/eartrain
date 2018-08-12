@@ -102,8 +102,10 @@
             },
             play() {
                 // this.params.active = !this.params.active;    
-                _common.play(this.actualVal,{});
-                
+                if (this.params.display != '?')
+                {
+                  _common.play(this.actualVal,{});
+                }                
                 this.$emit('click');
             },
         },

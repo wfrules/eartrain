@@ -1,14 +1,15 @@
 <template>
     <div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
+        <notegroup v-if="revealing" :notes.sync="answers"></notegroup>        
         <div class='btnbar'>
           <button  @click='play' :disabled='!canPlay()'>play</button>
           <button  @click='stop' >stop</button>
-          <button  @click='shuffle'>shuffle</button>
-          <button  @click='reveal'>reveal</button>
-          <button  @click='toggleStandard'>>></button>
+          <button  @click='shuffle'v-show="revealing">shuffle</button>
+          <button  @click='reveal' v-show="showReveal">reveal</button>
+          <button  @click='toggleStandard' v-show="!revealing" >>></button>
         </div>
-        <ul>
+        <ul v-show="!revealing">
           <li class='row'>
             <div class='key colleft' @click='keyClick(1)'>1</div><div class='key colright'  @click='keyClick(2)'>2</div>
           </li>
@@ -19,21 +20,20 @@
             <div class='key colleft' @click='keyClick(5)'>5</div><div class='key colright'  @click='keyClick(6)'>6</div>
           </li>
           <li class='row'>
-            <div class='key colleft' @click='keyClick(7)'>7</div><div class='key colright' @click='keyClick(8)'>i</div>
+            <div class='key colleft' @click='keyClick(7)'>7</div><div class='key colright' @click='reset'>R</div>
           </li>          
           <li class='row'>
-            <div class='key colleft'>b</div><div class='key colright'>#</div>
+            <div class='key colleft' @click='fall'>b</div><div class='key colright' @click='rise'>#</div>
           </li>                
           <li class='row'>
-            <div class='key colleft'>-8</div><div class='key colright'>+8</div>
+            <div class='key colleft' @click='setTimes(-1)'>-8</div><div class='key colright' @click='setTimes(1)'>+8</div>
           </li>     
           <li class='row'>
             <div class='key colleft'>←</div><div class='key colright'>→</div>
           </li>  
-        </ul>                   
-        <div class="standard" v-if="showStandard">
-            <note v-for="(key,index) in standards" :params.sync="key"  :key="index" @play="notePlay(key)"></note>
-        </div>
+        </ul>  
+        <div>{{questResult}}</div>
+        <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>                 
     </div>
 </template>
 
@@ -44,7 +44,62 @@
     const _questLen = 6;
     export default {
         name: 'Train',
-        created(){
+        computed: {
+          questResult(){
+              let bSuccess = true;
+              for(let i = 0; i< this.questions.length;i++) 
+              {
+                let iAnswered = _common.getValFromParams(this.questions[i]);
+                let iCorret = _common.getValFromParams(this.answers[i]);
+                if(iAnswered != iCorret)
+                {
+                  bSuccess = false;
+                }
+                console.log(iAnswered, iCorret);
+              }
+              return (bSuccess)?'YES':'NO';
+          },
+          showReveal(){
+            let bRet = false;
+            if(!this.revealing)
+            {
+              let arrHidding  = this.questions.filter(quest=>{
+                return quest.display == "?";
+              });
+              if (!arrHidding.length)
+              {
+                bRet = true;
+              }
+            }
+            return bRet;
+          },
+          answers(){
+            return  this.questions.map(quest=>{
+              return {
+                  val: quest.val,
+                  times: quest.times,
+                  sign: quest.sign, 
+                  display: quest.val, 
+                  active: false
+                }
+            });
+          }
+        },
+        created(){       
+          let arrStandards = [];
+          for(let i = 1; i <= 7; i++)
+          {
+            let objNote = {
+              val: i,
+              times: 0,
+              sign: _common.sign.Normal, 
+              display: i, 
+              active: false
+            };
+              arrStandards.push(objNote);
+          }
+          this.standards = arrStandards;
+
           let objSelf = this;
 
           (function poll(){
@@ -58,6 +113,18 @@
             notegroup
         },
         methods: {
+            reset(){
+              this.$refs.ng.reset();
+            },
+            rise(){
+              this.$refs.ng.rise()
+            },
+            fall(){
+              this.$refs.ng.fall()
+            },   
+            setTimes(times){
+              this.$refs.ng.setTimes(times)
+            },
             stop(){
               _common.stop();
             },
@@ -79,21 +146,16 @@
               let dRate = 0.5;
               for(let i = 0; i< this.questions.length;i++)
               {
-                _common.play(this.questions[i].val, {delay: i* dRate});
+                _common.play(_common.getValFromParams(this.questions[i]), {delay: i* dRate});
               }
               let dDelay = this.questions.length * dRate;
               this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD hh:mm:ss');
             },
             reveal(){
-              this.$refs.ng.reveal();
+              this.revealing = true;              
             },
             notePlay(note){
                 console.log(note);
-            },
-            getNoteParams(quest){
-              let objRet = {val: _common.getNote(quest, 0).val,
-                flag: _common.sign.Normal};
-              return objRet;
             },
             shuffle(){
               let arrQuests = [];
@@ -103,25 +165,19 @@
                 let objNote = {
                   val: iNote,
                   times: 0,
-                  flag: _common.sign.Normal, 
+                  sign: _common.sign.Normal, 
                   display: '?', 
                   active: i == 0
                 };
                 arrQuests.push(objNote);
               }
-              this.questions = arrQuests;
-              let arrStandards = [];
-                for(let i = 1; i <= 7; i++)
-                {
-                    let objNote = {val: _common.getNote(i, 0).val,
-                        flag: _common.sign.Normal, display: i};
-                    arrStandards.push(objNote);
-                }
-                this.standards = arrStandards;
+              this.questions = arrQuests;              
+              this.revealing = false;
             },
         },
         data() {
             return {
+               revealing: false,
                questions: [],
                keyboards: [1,2,3,4,5,6,7],
                play_end_at: moment().format('YYYY-MM-DD hh:mm:ss'),
@@ -167,6 +223,6 @@
     }   
     .btnbar button{
       width: 15%;
-      margin-left: 20px;
+      margin-left: 15px;
     } 
 </style>

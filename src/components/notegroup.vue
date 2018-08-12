@@ -39,6 +39,19 @@
                     // this.$refs['note'+ i].reveal();
                 }
             },
+            reset(){
+                this.$props.notes[this.activeIndex].sign = _common.sign.Normal;
+                this.$props.notes[this.activeIndex].times = 0;
+            },
+            rise(){
+                this.$props.notes[this.activeIndex].sign = _common.sign.Plus;
+            },
+            fall(){
+                this.$props.notes[this.activeIndex].sign = _common.sign.Minus;
+            },
+            setTimes(times){
+              this.$props.notes[this.activeIndex].times = times;
+            },            
             setVal(key){
                 switch(key){
                     case 1:
@@ -48,7 +61,7 @@
                     case 5:
                     case 6:
                     case 7:
-                        this.$props.notes[this.activeIndex].display = key;//_common.getNote(key, 0).val;
+                        this.$props.notes[this.activeIndex].display = key;
                         break;
                 }
             },
