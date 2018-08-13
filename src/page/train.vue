@@ -1,6 +1,5 @@
 <template>
     <div>
-        {{keyLayOut}}
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>
@@ -13,71 +12,24 @@
             <button @click='reveal' v-show="showReveal">reveal</button>
             <button @click='toggleStandard' v-show="!revealing">>></button>
         </div>
-
-        <x-button type="primary" v-for="keyObj in keyboard" @click.native="keyPress(keyObj)" :key="keyObj.caption">{{keyObj.caption}}</x-button>
-
-        <!--<flexbox>-->
-            <!--<flexbox-item><x-button type="primary" class="flex-demo">1</x-button></flexbox-item>-->
-            <!--<flexbox-item><x-button type="primary" class="flex-demo">2</x-button></flexbox-item>-->
-        <!--</flexbox>-->
-
-        <ul v-show="revealing">
-            <li class='row'>
-                <div class='key colleft' @click='keyClick(1)'>1</div>
-                <div class='key colright' @click='keyClick(2)'>2</div>
-            </li>
-            <li class='row'>
-                <div class='key colleft' @click='keyClick(3)'>3</div>
-                <div class='key colright' @click='keyClick(4)'>4</div>
-            </li>
-            <li class='row'>
-                <div class='key colleft' @click='keyClick(5)'>5</div>
-                <div class='key colright' @click='keyClick(6)'>6</div>
-            </li>
-            <li class='row'>
-                <div class='key colleft' @click='keyClick(7)'>7</div>
-                <div class='key colright' @click='reset'>R</div>
-            </li>
-            <li class='row'>
-                <div class='key colleft' @click='fall'>b</div>
-                <div class='key colright' @click='rise'>#</div>
-            </li>
-            <li class='row'>
-                <div class='key colleft' @click='setTimes(-1)'>-8</div>
-                <div class='key colright' @click='setTimes(1)'>+8</div>
-            </li>
-            <li class='row'>
-                <div class='key colleft' @click='prev'>←</div>
-                <div class='key colright' @click='next'>→</div>
-            </li>
-        </ul>
+        <keyboard :keys="keys" v-if="!revealing"  @click="keyPress"></keyboard>
     </div>
 </template>
 
 <script>
     import {Icon} from 'vux'
     import { XButton } from 'vux'
-    import { Flexbox, FlexboxItem } from 'vux'
+    
 
     let moment = require('moment');
     import _common from '@/com/common';
     import notegroup from '@/components/notegroup';
+    import keyboard from '@/components/keyboard';
 
     const _questLen = 6;
     export default {
         name: 'Train',
-        computed: {
-            keyLayOut(){
-                let arrLayOut = [];
-                for(let i = 0; i < this.keyboard.length; i++)
-                {
-                    if (i % 2 == 0)
-                    {
-                        arrLayOut.push({});
-                    }
-                }
-                return arrLayOut;
-            },
+        computed: {           
             showReveal() {
                 let bRet = false;
                 if (!this.revealing) {
@@ -136,38 +88,17 @@
             this.shuffle();
         },
         components: {
-            notegroup, Icon, XButton, Flexbox, FlexboxItem
+            notegroup, Icon, XButton, keyboard
         },
         methods: {
             keyPress(keyObj){
-                console.log(keyObj);
-            },
-            prev() {
-                this.$refs.ng.prev();
-            },
-            next() {
-                this.$refs.ng.next();
-            },
-            reset() {
-                this.$refs.ng.reset();
-            },
-            rise() {
-                this.$refs.ng.rise()
-            },
-            fall() {
-                this.$refs.ng.fall()
-            },
-            setTimes(times) {
-                this.$refs.ng.setTimes(times)
-            },
+                this.$refs.ng.change(keyObj);
+            },           
             stop() {
                 _common.stop();
             },
             questClick(index) {
                 alert(index);
-            },
-            keyClick(key) {
-                this.$refs.ng.change(key)
             },
 
             toggleStandard() {
@@ -179,10 +110,10 @@
             },
             play() {
                 let dRate = 0.5;
-                for (let i = 0; i < this.questions.length; i++) {
-                    _common.play(_common.getValFromParams(this.questions[i]), {delay: i * dRate});
+                for (let i = 0; i < this.answers.length; i++) {
+                    _common.play(_common.getValFromParams(this.answers[i]), {delay: i * dRate});
                 }
-                let dDelay = this.questions.length * dRate;
+                let dDelay = this.answers.length * dRate;
                 this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD hh:mm:ss');
             },
             reveal() {
@@ -205,7 +136,6 @@
                     arrQuests.push(objNote);
                 }
                 this.questions = arrQuests;
-
                 this.answers = this.questions.map(quest => {
                     return {
                         val: quest.val,
@@ -215,8 +145,6 @@
                         active: false
                     }
                 });
-
-
                 this.revealing = false;
             },
         },
@@ -225,8 +153,12 @@
                 revealing: false,
                 questions: [],
                 answers: [],
-                keyboardss: [1, 2, 3, 4, 5, 6, 7, 'R', 'b', '#', '-8', '+8', '←', '→'],
-                keyboard: [
+                play_end_at: moment().format('YYYY-MM-DD hh:mm:ss'),
+                now: moment().format('YYYY-MM-DD hh:mm:ss'),
+                timerCheck: 0,
+                showStandard: false,
+                questResult: false,
+                keys: [
                     {caption: 1, code: 1},
                     {caption: 2, code: 2},
                     {caption: 3, code: 3},
@@ -234,18 +166,14 @@
                     {caption: 5, code: 5},
                     {caption: 6, code: 6},
                     {caption: 7, code: 7},
+                    {caption: 'R', code: 'r'},
                     {caption: 'b', code: 'b'},
                     {caption: '#', code: '#'},
                     {caption: '-8', code: '-8'},
                     {caption: '+8', code: '+8'},
-                    {caption: '←', code: 'L'},
-                    {caption: '→', code: 'R'},
-                ],
-                play_end_at: moment().format('YYYY-MM-DD hh:mm:ss'),
-                now: moment().format('YYYY-MM-DD hh:mm:ss'),
-                timerCheck: 0,
-                showStandard: false,
-                questResult: false,
+                    {caption: '←', code: 'p'},
+                    {caption: '→', code: 'n'},
+                ]                
             }
         }
     }

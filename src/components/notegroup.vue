@@ -88,8 +88,8 @@
             setTimes(times){
               this.$props.notes[this.activeIndex].times = times;
             },
-            change(key){
-                switch(key){
+            change(keyObj){
+                switch(keyObj.code){
                     case 1:
                     case 2:
                     case 3:
@@ -97,10 +97,31 @@
                     case 5:
                     case 6:
                     case 7:
-                        this.$props.notes[this.activeIndex].val = key;
-                        this.$props.notes[this.activeIndex].display = key;
+                        this.$props.notes[this.activeIndex].val = keyObj.code;
+                        this.$props.notes[this.activeIndex].display = keyObj.code;
                         this.toHidding();
                         break;
+                    case 'r':
+                        this.reset();
+                        break;
+                    case 'b':
+                        this.fall();
+                        break;
+                    case '#':
+                        this.rise();
+                        break;                        
+                    case '-8':
+                        this.setTimes(-1);
+                        break;                         
+                    case '+8':
+                        this.setTimes(1);
+                        break;                                    
+                    case 'p':
+                        this.prev();
+                        break;  
+                    case 'n':
+                        this.next();
+                        break;                                                  
                 }
             },
            noteClick(index){
