@@ -14,6 +14,9 @@
                 type: Array,
                 required: true,
             },
+            can_active:{
+                default: true,
+            }
         },  
         components: {
             note
@@ -21,15 +24,42 @@
         watch: {
             activeIndex: {
                 handler: function (val, oldVal) {
-                    for(let i = 0; i < this.$props.notes.length; i++)
-                    {
-                        this.$props.notes[i].active = (i == val);
-                    }                    
+                    if (this.$props.can_active) {
+                        for (let i = 0; i < this.$props.notes.length; i++) {
+                            this.$props.notes[i].active = (i == val);
+                        }
+                    }
                 },
                 deep: true,
             },
         },                    
         methods: {
+            toHidding(){//定位到下一个隐藏按钮
+                let bFound= false;
+                for (let i = this.activeIndex; i < this.$props.notes.length; i++)
+                {
+                    let objNoteData = this.$props.notes[i];
+                    if (objNoteData.display == '?')
+                    {
+                        bFound = true;
+                        this.activeIndex = i;
+                        break;
+                    }
+                }
+                if(!bFound)
+                {
+                    for (let i = 0; i < this.activeIndex; i++)
+                    {
+                        let objNoteData = this.$props.notes[i];
+                        if (objNoteData.display == '?')
+                        {
+                            bFound = true;
+                            this.activeIndex = i;
+                            break;
+                        }
+                    }
+                }
+            },
             reveal(){
                 for (let i = 0; i < this.$props.notes.length; i++)
                 {
@@ -57,8 +87,8 @@
             },
             setTimes(times){
               this.$props.notes[this.activeIndex].times = times;
-            },            
-            setVal(key){
+            },
+            change(key){
                 switch(key){
                     case 1:
                     case 2:
@@ -69,6 +99,7 @@
                     case 7:
                         this.$props.notes[this.activeIndex].val = key;
                         this.$props.notes[this.activeIndex].display = key;
+                        this.toHidding();
                         break;
                 }
             },
