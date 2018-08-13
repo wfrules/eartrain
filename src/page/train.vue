@@ -1,7 +1,8 @@
 <template>
     <div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
-        <notegroup v-if="revealing" :notes.sync="answers"></notegroup>        
+        <notegroup v-if="revealing" :notes.sync="answers"></notegroup>
+        <div v-if="revealing">{{questResult}}</div>
         <div class='btnbar'>
           <button  @click='play' :disabled='!canPlay()'>play</button>
           <button  @click='stop' >stop</button>
@@ -29,10 +30,10 @@
             <div class='key colleft' @click='setTimes(-1)'>-8</div><div class='key colright' @click='setTimes(1)'>+8</div>
           </li>     
           <li class='row'>
-            <div class='key colleft'>←</div><div class='key colright'>→</div>
+            <div class='key colleft'  @click='prev'>←</div><div class='key colright' @click='next'>→</div>
           </li>  
         </ul>  
-        <div>{{questResult}}</div>
+
         <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>                 
     </div>
 </template>
@@ -45,20 +46,6 @@
     export default {
         name: 'Train',
         computed: {
-          questResult(){
-              let bSuccess = true;
-              for(let i = 0; i< this.questions.length;i++) 
-              {
-                let iAnswered = _common.getValFromParams(this.questions[i]);
-                let iCorret = _common.getValFromParams(this.answers[i]);
-                if(iAnswered != iCorret)
-                {
-                  bSuccess = false;
-                }
-                console.log(iAnswered, iCorret);
-              }
-              return (bSuccess)?'YES':'NO';
-          },
           showReveal(){
             let bRet = false;
             if(!this.revealing)
@@ -72,18 +59,31 @@
               }
             }
             return bRet;
-          },
-          answers(){
-            return  this.questions.map(quest=>{
-              return {
-                  val: quest.val,
-                  times: quest.times,
-                  sign: quest.sign, 
-                  display: quest.val, 
-                  active: false
-                }
-            });
           }
+        },
+        watch: {
+            questions: {
+                handler: function (questions, oldVal) {
+                    let bSuccess = true;
+                    for(let i = 0; i< questions.length;i++)
+                    {
+                        if (questions[i].display != this.answers[i].display)
+                        {
+                            bSuccess = false;
+                            break;
+                        }
+                        let iAnswered = _common.getValFromParams(questions[i]);
+                        let iCorret = _common.getValFromParams(this.answers[i]);
+                        if(iAnswered != iCorret)
+                        {
+                            bSuccess = false;
+                            break;
+                        }
+                    }
+                    this.questResult = (bSuccess)?'YES':'NO';
+                },
+                deep: true,
+            },
         },
         created(){       
           let arrStandards = [];
@@ -113,6 +113,12 @@
             notegroup
         },
         methods: {
+            prev(){
+                this.$refs.ng.prev();
+            },
+            next(){
+                this.$refs.ng.next();
+            },
             reset(){
               this.$refs.ng.reset();
             },
@@ -171,7 +177,19 @@
                 };
                 arrQuests.push(objNote);
               }
-              this.questions = arrQuests;              
+              this.questions = arrQuests;
+
+              this.answers =  this.questions.map(quest=>{
+                return {
+                    val: quest.val,
+                    times: quest.times,
+                    sign: quest.sign,
+                    display: quest.val,
+                    active: false
+                }
+              });
+
+
               this.revealing = false;
             },
         },
@@ -179,11 +197,13 @@
             return {
                revealing: false,
                questions: [],
+               answers: [],
                keyboards: [1,2,3,4,5,6,7],
                play_end_at: moment().format('YYYY-MM-DD hh:mm:ss'),
                now: moment().format('YYYY-MM-DD hh:mm:ss'),
                timerCheck: 0,
                showStandard: false,
+               questResult: false,
             }
         }
     }

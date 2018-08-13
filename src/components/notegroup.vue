@@ -39,6 +39,12 @@
                     // this.$refs['note'+ i].reveal();
                 }
             },
+            prev(){
+                this.activeIndex = Math.max(this.activeIndex-1, 0);
+            },
+            next(){
+                this.activeIndex = Math.min(this.activeIndex + 1, this.$props.notes.length - 1);
+            },
             reset(){
                 this.$props.notes[this.activeIndex].sign = _common.sign.Normal;
                 this.$props.notes[this.activeIndex].times = 0;
@@ -61,6 +67,7 @@
                     case 5:
                     case 6:
                     case 7:
+                        this.$props.notes[this.activeIndex].val = key;
                         this.$props.notes[this.activeIndex].display = key;
                         break;
                 }
