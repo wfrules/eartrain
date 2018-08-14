@@ -1,16 +1,16 @@
 <template>
-    <div>
+    <div v-if="$store.state.libLoaded">
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
-        <div class='btnbar'>
-            <button @click='doPlay'>play</button>
-            <button @click='shuffle' v-show="revealing">shuffle</button>
-            <button @click='reveal' v-show="showReveal">reveal</button>
-            <button @click='toggleStandard' v-show="!revealing">>></button>
-        </div>
+        <flexbox>
+            <flexbox-item><x-button type="warn" @click.native='doPlay'>play</x-button></flexbox-item>
+            <flexbox-item><x-button type="warn" @click.native='shuffle'>shuffle</x-button></flexbox-item>
+            <flexbox-item v-show="showReveal"><x-button type="warn" @click.native='reveal' >reveal</x-button></flexbox-item>
+            <flexbox-item><x-button type="warn" @click.native='toggleStandard' v-show="!revealing">KB</x-button></flexbox-item>
+        </flexbox>
         <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard>
     </div>
 </template>
@@ -18,7 +18,7 @@
 <script>
     import {Icon} from 'vux'
     import { XButton } from 'vux'
-    
+    import { Flexbox, FlexboxItem } from 'vux'   
 
     let moment = require('moment');
     import _common from '@/com/common';
@@ -42,6 +42,12 @@
             }
         },
         watch: {
+            '$store.state.libLoaded': function(newVal, oldVal){
+              if(newVal)
+              {
+                this.shuffle();
+              }
+            },
             questions: {
                 handler: function (questions, oldVal) {
                     let bSuccess = true;
@@ -82,11 +88,10 @@
                 clearTimeout(objSelf.timerCheck);
                 objSelf.now = moment().format('YYYY-MM-DD hh:mm:ss');
                 objSelf.timerCheck = setTimeout(poll, 1000);
-            })();
-            this.shuffle();
+            })();            
         },
         components: {
-            notegroup, Icon, XButton, keyboard
+            notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
         },
         methods: {
             keyPress(keyObj){
@@ -146,6 +151,7 @@
                     }
                 });
                 this.revealing = false;
+                this.play();
             },
         },
         data() {
@@ -193,50 +199,5 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    button {
-        width: 60px;
-        height: 50px;
-    }
 
-    .questList {
-        display: flex;
-    }
-
-    ul, li {
-        padding: 0;
-        margin: 0;
-        list-style: none
-    }
-
-    .keyboard {
-        display: flex;
-    }
-
-    .row {
-        width: 100%;
-        height: 70px;
-    }
-
-    .key {
-        border: 1px solid;
-        width: 48%;
-        height: 100%;
-        display: inline-block;
-        text-align: center;
-        font-size: 30px;
-    }
-
-    .colleft {
-        float: left;
-
-    }
-
-    .colright {
-        float: right;
-    }
-
-    .btnbar button {
-        width: 15%;
-        margin-left: 15px;
-    }
 </style>

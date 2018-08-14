@@ -1,10 +1,13 @@
 <template>
-    <div class="questList">
-        <note v-for="(note,index) in notes" :params.sync="note"  :key="index" @click="noteClick(index)" :ref="'note'+ index"></note>
-    </div>
+    <flexbox>
+        <flexbox-item  v-for="(note,index) in notes" :key="'row' + index" >
+            <note  :params.sync="note"  @click="noteClick(index)" :ref="'note'+ index"></note>
+        </flexbox-item>
+    </flexbox>
 </template>
 
 <script>
+    import { Flexbox, FlexboxItem } from 'vux'    
     import _common from '@/com/common';
     import note from '@/components/note';   
     export default {
@@ -19,7 +22,7 @@
             }
         },  
         components: {
-            note
+            note, Flexbox, FlexboxItem
         },  
         watch: {
             activeIndex: {

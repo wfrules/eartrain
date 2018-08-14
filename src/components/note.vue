@@ -1,12 +1,6 @@
 <template>
-    <div :style="getFrameStyle()"  @click="play"  @touchstart="touchStart"  @touchend="touchEnd">
-<!--         <div class="adjuster" v-show="showAdjuster">
-            <input class="adjInput" type='number' v-model.number="params.val" min="48" max="60"/>
-            <span>{{params.flag}}</span>
-        </div> -->
-        <div :style="getMainBtnStyle()">
-            <div :class="getNoteClass()">{{params.display}}</div>
-        </div>
+    <div :style="getMainBtnStyle()"  @click="play"  @touchstart="touchStart"  @touchend="touchEnd">
+        <div :class="getNoteClass()">{{params.display}}</div>
     </div>
 </template>
 
@@ -35,20 +29,6 @@
             }
         },
         methods: {
-            reveal(){
-              alert('x');
-            },
-            getTitle(){
-                return this.params.display;
-            },
-            getFrameStyle(){
-                let objFrameStyle = {
-                  position: 'relative',
-                  margin: '5px',
-                };
-                objFrameStyle.border = (this.params.active)?'1px solid red':'1px solid black';
-                return objFrameStyle;
-            },
             getMainBtnStyle(){
                 let objStyle = {
                     position: 'relative',                    
@@ -56,7 +36,22 @@
                     width: '50px',
                     height: '50px'
                 };
-                objStyle['background-color'] = (this.touching)?'lightgray':'white';
+                objStyle.border = (this.params.active)?'1px solid red':'1px solid black';
+                if (this.touching)
+                {
+                  objStyle['background-color'] = 'lightgray';
+                }
+                else 
+                {
+                  if (this.params.active)
+                  {
+                      objStyle['background-color'] = 'yellow';
+                  }
+                  else
+                  {
+                      objStyle['background-color'] = 'white';
+                  }                  
+                }
                 return objStyle;
             },
             touchStart() {
@@ -138,7 +133,10 @@
     }
 
     .notebtn {
-        margin-top: 25%;
+        width: 45%;
+        height: 45%;
+        text-align: center;
+        padding: 25%;
     }
 
     .upper:after {
