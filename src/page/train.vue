@@ -6,13 +6,12 @@
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
         <div class='btnbar'>
-            <button @click='play' :disabled='!canPlay()'>play</button>
-            <!--<button  @click='stop' >stop</button>-->
+            <button @click='doPlay'>play</button>
             <button @click='shuffle' v-show="revealing">shuffle</button>
             <button @click='reveal' v-show="showReveal">reveal</button>
             <button @click='toggleStandard' v-show="!revealing">>></button>
         </div>
-        <keyboard :keys="keys" v-if="!revealing"  @click="keyPress"></keyboard>
+        <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard>
     </div>
 </template>
 
@@ -26,7 +25,6 @@
     import notegroup from '@/components/notegroup';
     import keyboard from '@/components/keyboard';
 
-    const _questLen = 6;
     export default {
         name: 'Train',
         computed: {           
@@ -95,6 +93,7 @@
                 this.$refs.ng.change(keyObj);
             },           
             stop() {
+                this.play_end_at =  moment().format('YYYY-MM-DD hh:mm:ss');
                 _common.stop();
             },
             questClick(index) {
@@ -104,9 +103,13 @@
             toggleStandard() {
                 this.showStandard = !this.showStandard;
             },
-            canPlay() {
-                let bCanPlay = moment(this.now) > moment(this.play_end_at);
-                return bCanPlay;
+            isFree() {
+                let bIsFree = moment(this.now) > moment(this.play_end_at);
+                return bIsFree;
+            },
+            doPlay(){
+                this.stop();
+                this.play();
             },
             play() {
                 let dRate = 0.5;
@@ -124,15 +127,12 @@
             },
             shuffle() {
                 let arrQuests = [];
-                for (let i = 0; i < _questLen; i++) {
-                    let iNote = _common.randomNumBoth(1, 7);
-                    let objNote = {
-                        val: iNote,
-                        times: 0,
-                        sign: _common.sign.Normal,
-                        display: '?',
-                        active: i == 0
-                    };
+                for (let i = 0; i < 6; i++) {
+                    let idx = _common.randomNumBoth(0, 7);
+                    let iNote = _common.keyToNote(this.pool[idx].code);
+                    let objNote = _common.getTitleFromVal(iNote, _common.sign.Minus);
+                    objNote.display = '?';
+                    objNote.active = i == 0;
                     arrQuests.push(objNote);
                 }
                 this.questions = arrQuests;
@@ -158,6 +158,18 @@
                 timerCheck: 0,
                 showStandard: false,
                 questResult: false,
+
+                pool: [
+                    {caption: 1, code: 'C3'},
+                    {caption: 2, code: 'D3'},
+                    {caption: 3, code: 'E3'},
+                    {caption: 4, code: 'F3'},
+                    {caption: 5, code: 'G3'},
+                    {caption: 6, code: 'A3'},
+                    {caption: 7, code: 'B3'},
+                    {caption: 'i', code: 'C4'},
+                ],
+
                 keys: [
                     {caption: 1, code: 1},
                     {caption: 2, code: 2},

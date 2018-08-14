@@ -121,7 +121,16 @@
                         break;  
                     case 'n':
                         this.next();
-                        break;                                                  
+                        break;
+                    default:
+                        let iNote = _common.keyToNote(keyObj.code);
+                        let objNote = _common.getTitleFromVal(iNote, _common.sign.Minus);
+                        this.$props.notes[this.activeIndex].val = objNote.val;
+                        this.$props.notes[this.activeIndex].display = objNote.val;
+                        this.$props.notes[this.activeIndex].times = objNote.times;
+                        this.$props.notes[this.activeIndex].sign = objNote.sign;
+                        this.toHidding();
+                        break;
                 }
             },
            noteClick(index){
