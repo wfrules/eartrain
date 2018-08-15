@@ -1,8 +1,10 @@
 <template>
     <div>
-        <flexbox  v-for="(row,index)  in keyLayOut" :key="'row' + index" >
-            <flexbox-item v-for="btn in row" :key="'rowkey' + btn.code">
-              <x-button type="primary" class="flex-demo" @click.native="keyPress(btn)">{{btn.caption}}</x-button>
+        <flexbox  v-for="(keyBtn,index)  in keys" :key="'row' + index" >
+            <flexbox-item>
+                <x-button type="primary" class="flex-demo" @click.native="keyPress(keyBtn)">
+                    {{keyBtn.caption}}
+                </x-button>                
             </flexbox-item>
         </flexbox>
     </div>
