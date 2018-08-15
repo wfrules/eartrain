@@ -1,4 +1,10 @@
 # eartrain
+用vue写的耳力训练小软件，随机产生1234567i，用户答题并判断结果
+写完才觉得看着简单的需求，想做到好用，里面套路实在太深了
+
+技术栈 VUE全家桶  移动端框架VUX 音乐播放  MIDI.JS
+持续完善中....
+
 
 > ear train
 
@@ -18,4 +24,4 @@ npm run build
 npm run build --report
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
