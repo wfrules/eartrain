@@ -5,13 +5,29 @@
         <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
-        <flexbox>
-            <flexbox-item><x-button type="warn" @click.native='doPlay'>play</x-button></flexbox-item>
-            <flexbox-item><x-button type="warn" @click.native='shuffle'>shuffle</x-button></flexbox-item>
-            <flexbox-item v-show="showReveal"><x-button type="warn" @click.native='reveal' >reveal</x-button></flexbox-item>
-            <flexbox-item><x-button type="warn" @click.native='toggleStandard' v-show="!revealing">KB</x-button></flexbox-item>
-        </flexbox>
         <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard>
+        <flexbox>
+            <flexbox-item><x-button type="warn" @click.native='doPlay'>
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-bofang"></use>
+                </svg>
+            </x-button></flexbox-item>
+            <flexbox-item><x-button type="warn" @click.native='shuffle'>
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-zhangjiechuti"></use>
+                </svg>
+            </x-button></flexbox-item>
+            <flexbox-item v-show="showReveal"><x-button type="warn" @click.native='reveal' >
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-wenjuandaan"></use>
+                </svg>
+            </x-button></flexbox-item>
+            <flexbox-item><x-button type="warn" @click.native='toggleStandard' v-show="!revealing">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-jianpan"></use>
+                </svg>
+            </x-button></flexbox-item>
+        </flexbox>
     </div>
 </template>
 

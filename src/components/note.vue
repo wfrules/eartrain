@@ -72,7 +72,7 @@
                         objStyle.fall = true;
                         break;
                 }
-                if (this.params.times > 0) {
+                if ((this.params.times > 0) && (this.params.display != "?")) {
                     objStyle.upper = true;
                 }
                 else if (this.params.times < 0) {
