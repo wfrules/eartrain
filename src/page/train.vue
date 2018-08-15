@@ -2,7 +2,6 @@
     <div v-if="$store.state.libLoaded">
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
-        <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
         <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard>
@@ -28,6 +27,7 @@
                 </svg>
             </x-button></flexbox-item>
         </flexbox>
+        <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>
     </div>
 </template>
 

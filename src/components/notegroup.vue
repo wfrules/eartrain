@@ -62,6 +62,10 @@
                         }
                     }
                 }
+                if(!bFound)
+                {
+                    this.next();
+                }
             },
             reveal(){
                 for (let i = 0; i < this.$props.notes.length; i++)
