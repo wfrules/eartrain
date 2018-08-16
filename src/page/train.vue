@@ -4,7 +4,7 @@
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
-        <div class="joystick_area" id="zone_joystick" ref="joystick"></div>
+        <div v-show="!revealing" class="joystick_area" id="zone_joystick" ref="joystick"></div>
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard> -->
         <flexbox>
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
@@ -63,14 +63,61 @@
               if(newVal)
               {
                  this.$nextTick(() => {
-
+                                let objSelf = this;
                                 var options = {
                                     zone: this.$refs.joystick,//document.getElementById('zone_joystick'),
                                     mode: 'static',
                                     position: {left: '50%', top: '43%'},
                                     color: 'red'
                                 };            
-                                var manager = require('nipplejs').create(options);
+                                var objJoystick = require('nipplejs').create(options);
+
+                                  objJoystick.on('start end', function(evt, data) {
+                                    // dump(evt.type);
+                                    // debug(data);
+                                    switch(evt.type)
+                                    {
+                                        case 'end':
+                                            objSelf.keyPress(objSelf.joyKey);
+                                            break;
+                                    }
+                                  })
+                                  .on('move', function(evt, data) {
+                                    let iAngle = data.angle.degree;
+
+                                    let iRet = -1;
+                                    for(let i = 0; i < 8; i++)
+                                    {
+                                        let iBegin = 22.5 + i*45;
+                                        let iEnd = 22.5 + (i+1)*45; 
+                                        if(((iAngle >= iBegin) && (iAngle < iEnd))
+                                            ||
+                                            (((iAngle + 360) >= iBegin) && ((iAngle + 360) < iEnd))
+                                            )
+                                        {
+                                            iRet = i;
+                                            break;
+                                        }
+                                    }                                             
+                                    let arrStand = [3, 2, 1, 4, 6, 7, 8, 5];
+                                    let iNote = arrStand[iRet];
+                                    objSelf.joyKey = objSelf.pool[iNote - 1];
+                                  })
+                                  .on('dir:up plain:up dir:left plain:left dir:down ' +
+                                        'plain:down dir:right plain:right',
+                                        function(evt, data) {
+                                            // dump(evt.type);
+                                            // console.log('direction');
+                                          }
+                                       )
+                                  .on('pressure', function(evt, data) {
+                                        // console.log('pressure');
+                                            // debug({
+                                            //   pressure: data
+                                            // });
+                                  });
+                                  this.joystick = objJoystick;
+
                            })                     
                 this.shuffle();
               }
@@ -188,6 +235,8 @@
         },
         data() {
             return {
+                joyKey: null,
+                joystick: null,
                 revealing: false,
                 questions: [],
                 answers: [],
