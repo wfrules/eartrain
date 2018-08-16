@@ -141,13 +141,14 @@
                 this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD hh:mm:ss');
             },
             reveal() {
-                this.revealing = true;
+                this.$refs.ng.activeIndex = 0;
+                this.revealing = true;                
             },
             notePlay(note) {
                 console.log(note);
             },
-            shuffle() {
-                let arrQuests = [];
+            shuffle() {                
+                let arrQuests = [];                
                 for (let i = 0; i < 6; i++) {
                     let idx = _common.randomNumBoth(0, 7);
                     let iNote = _common.keyToNote(this.pool[idx].code);
