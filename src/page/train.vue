@@ -4,7 +4,8 @@
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
-        <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard>
+        <div class="joystick_area" id="zone_joystick" ref="joystick"></div>
+        <!-- <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard> -->
         <flexbox>
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
                 <svg class="icon" aria-hidden="true">
@@ -27,7 +28,7 @@
                 </svg>
             </x-button></flexbox-item>
         </flexbox>
-        <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>
+   <!--      <notegroup v-if="showStandard" :notes.sync="standards"></notegroup> -->
     </div>
 </template>
 
@@ -61,6 +62,16 @@
             '$store.state.libLoaded': function(newVal, oldVal){
               if(newVal)
               {
+                 this.$nextTick(() => {
+
+                                var options = {
+                                    zone: this.$refs.joystick,//document.getElementById('zone_joystick'),
+                                    mode: 'static',
+                                    position: {left: '50%', top: '43%'},
+                                    color: 'red'
+                                };            
+                                var manager = require('nipplejs').create(options);
+                           })                     
                 this.shuffle();
               }
             },
@@ -104,7 +115,11 @@
                 clearTimeout(objSelf.timerCheck);
                 objSelf.now = moment().format('YYYY-MM-DD hh:mm:ss');
                 objSelf.timerCheck = setTimeout(poll, 1000);
-            })();            
+            })();                        
+        },
+        mounted(){                  
+
+                
         },
         components: {
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
@@ -216,5 +231,9 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+    .joystick_area {
+        width: 100%;
+        height: 400px;
+        background-color: blue;
+    }
 </style>
