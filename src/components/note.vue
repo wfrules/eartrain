@@ -47,6 +47,10 @@
                   {
                       objStyle['background-color'] = 'yellow';
                   }
+                  else if (this.params.display == "?")
+                  {
+                      objStyle['background-color'] = 'gray';
+                  }                   
                   else
                   {
                       objStyle['background-color'] = 'white';
