@@ -1,10 +1,11 @@
 <template>
     <div v-if="$store.state.libLoaded">
+        <div v-show="!revealing" class="joystick_area" ref="joystick">{{joyKey.caption}}</div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
-        <div v-show="!revealing" class="joystick_area" id="zone_joystick" ref="joystick">{{joyKey.caption}}</div>
+
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard> -->
         <flexbox>
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
@@ -97,7 +98,7 @@
                                             break;
                                         }
                                     }                                             
-                                    let arrStand = [3, 2, 1, 4, 6, 7, 8, 5];
+                                    let arrStand = [ 7, 8, 1, 2, 3, 4, 5, 6];
                                     let iNote = arrStand[iRet];
                                     objSelf.joyKey = objSelf.pool[iNote - 1];
                                   })
