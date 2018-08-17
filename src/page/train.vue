@@ -82,19 +82,31 @@
                                         case 'start':
                                             objSelf.joystick.touching = true;
                                             objSelf.joystick.position = data.position;
-                                            objSelf.joystick.touchBeginAt = moment().format('YYYY-MM-DD hh:mm:ss');
+                                            objSelf.joystick.touchBeginAt = moment();
 
                                             break;
                                         case 'end':
                                             if (objSelf.joystick.distance >= 50) {
                                                 objSelf.touchRelease(objSelf.joystick.key);
                                             }
-                                            let dtBegin = moment(objSelf.joystick.touchBeginAt);
-                                            let dtEnd = moment();
-                                            console.log(dtBegin.format('YYYY-MM-DD hh:mm:ss'));
-                                            console.log(dtEnd.format('YYYY-MM-DD hh:mm:ss'));
-                                            let iDiff =  dtEnd.diff(dtBegin, 'seconds');
-                                            console.log(iDiff);
+                                            else 
+                                            {//小范围移动
+                                                if (objSelf.showReveal)
+                                                {
+                                                    let iDiff =  moment().diff(objSelf.joystick.touchBeginAt, 'seconds');
+                                                    if (iDiff <= 2)
+                                                    {
+                                                        objSelf.doPlay();
+                                                    }
+                                                    else {
+                                                        objSelf.reveal();
+                                                    }
+                                                }
+                                                else 
+                                                {
+                                                    objSelf.doPlay();
+                                                }                                                                                               
+                                            }
                                             objSelf.joystick = objSelf.getEmptyStick();
                                             break;
                                     }
@@ -179,7 +191,7 @@
 
             (function poll() {
                 clearTimeout(objSelf.timerCheck);
-                objSelf.now = moment().format('YYYY-MM-DD hh:mm:ss');
+                objSelf.now = moment().format('YYYY-MM-DD HH:mm:ss');
                 objSelf.timerCheck = setTimeout(poll, 1000);
             })();                        
         },
@@ -197,8 +209,8 @@
                     key: {caption: '', code: ''},
                     distance: 0,
                     position: {x: 0, y: 0},
-                    touchBeginAt: moment().format('YYYY-MM-DD hh:mm:ss'),
-                    touchEndAt: moment().format('YYYY-MM-DD hh:mm:ss'),
+                    touchBeginAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    touchEndAt: moment().format('YYYY-MM-DD HH:mm:ss'),
                 };
             },
             getPosition(x, y, radius, index){
@@ -263,7 +275,7 @@
                 this.$refs.ng.change(keyObj);
             },           
             stop() {
-                this.play_end_at =  moment().format('YYYY-MM-DD hh:mm:ss');
+                this.play_end_at =  moment().format('YYYY-MM-DD HH:mm:ss');
                 _common.stop();
             },
             questClick(index) {
@@ -287,7 +299,7 @@
                     _common.play(_common.getValFromParams(this.answers[i]), {delay: i * dRate});
                 }
                 let dDelay = this.answers.length * dRate;
-                this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD hh:mm:ss');
+                this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD HH:mm:ss');
             },
             reveal() {
                 this.$refs.ng.activeIndex = 0;
@@ -326,8 +338,8 @@
                 revealing: false,
                 questions: [],
                 answers: [],
-                play_end_at: moment().format('YYYY-MM-DD hh:mm:ss'),
-                now: moment().format('YYYY-MM-DD hh:mm:ss'),
+                play_end_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+                now: moment().format('YYYY-MM-DD HH:mm:ss'),
                 timerCheck: 0,
                 showStandard: false,
                 questResult: false,
