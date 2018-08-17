@@ -303,6 +303,7 @@
             },
             reveal() {
                 this.$refs.ng.activeIndex = 0;
+                this.$refs.ng.check(this.answers);
                 this.revealing = true;                
             },
             notePlay(note) {
@@ -316,6 +317,7 @@
                     let objNote = _common.getTitleFromVal(iNote, _common.sign.Minus);
                     objNote.display = '?';
                     objNote.active = i == 0;
+                    objNote.state = 0;
                     arrQuests.push(objNote);
                 }
                 this.questions = arrQuests;

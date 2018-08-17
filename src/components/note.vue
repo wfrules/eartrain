@@ -43,18 +43,28 @@
                 }
                 else 
                 {
-                  if (this.params.active)
-                  {
-                      objStyle['background-color'] = 'yellow';
-                  }
-                  else if (this.params.display == "?")
-                  {
-                      objStyle['background-color'] = 'gray';
-                  }                   
-                  else
-                  {
-                      objStyle['background-color'] = 'white';
-                  }                  
+                    switch(this.params.state){
+                        case 0:
+                          if (this.params.active)
+                          {
+                              objStyle['background-color'] = 'yellow';
+                          }
+                          else if (this.params.display == "?")
+                          {
+                              objStyle['background-color'] = 'gray';
+                          }                   
+                          else
+                          {
+                              objStyle['background-color'] = 'white';
+                          }                        
+                          break;
+                        case 1:
+                            objStyle['background-color'] = 'green';
+                            break;
+                        case 2:
+                            objStyle['background-color'] = 'red';
+                            break;    
+                    }                  
                 }
                 return objStyle;
             },

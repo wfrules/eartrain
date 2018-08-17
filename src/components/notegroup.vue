@@ -37,6 +37,14 @@
             },
         },                    
         methods: {
+            check(answers){
+                for(let i = 0; i < this.$props.notes.length; i++)
+                {
+                    let iAnswered = _common.getValFromParams(this.$props.notes[i]);
+                    let iCorret = _common.getValFromParams(answers[i]);                    
+                    this.$props.notes[i].state = (iAnswered == iCorret)?1:2;
+                }    
+            },
             toHidding(){//定位到下一个隐藏按钮
                 let bFound= false;
                 for (let i = this.activeIndex; i < this.$props.notes.length; i++)
