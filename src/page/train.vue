@@ -91,21 +91,14 @@
                                             }
                                             else 
                                             {//小范围移动
-                                                if (objSelf.showReveal)
+                                                if (objSelf.canDoReveal())
                                                 {
-                                                    let iDiff =  moment().diff(objSelf.joystick.touchBeginAt, 'seconds');
-                                                    if (iDiff <= 2)
-                                                    {
-                                                        objSelf.doPlay();
-                                                    }
-                                                    else {
-                                                        objSelf.reveal();
-                                                    }
+                                                    objSelf.reveal();
                                                 }
                                                 else 
                                                 {
                                                     objSelf.doPlay();
-                                                }                                                                                               
+                                                };                                                                                              
                                             }
                                             objSelf.joystick = objSelf.getEmptyStick();
                                             break;
@@ -203,6 +196,15 @@
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
         },
         methods: {
+            canDoReveal(){
+                let bRet = false;
+                if (this.showReveal)
+                {
+                    let iDiff =  moment(this.now).diff(this.joystick.touchBeginAt, 'seconds');
+                    bRet = (iDiff > 2);
+                }
+                return bRet;
+            },
             getEmptyStick(){
                 return {
                     touching: false,
@@ -252,6 +254,11 @@
                     {
                         objStyle['background-color'] = 'yellow';
                     }
+                    if (this.canDoReveal())
+                    {
+                        objStyle['background-color'] = 'green';
+                    }
+
                 }
                 else
                 {
