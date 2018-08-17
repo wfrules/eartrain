@@ -1,6 +1,6 @@
 <template>
     <div v-if="$store.state.libLoaded">
-        <div v-show="!revealing" class="joystick_area" ref="joystick" @dblclick="doSubmit">{{joystick.key.caption}}</div>
+        <div v-show="!revealing" class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">{{joystick.key.caption}}</div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
@@ -179,6 +179,14 @@
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
         },
         methods: {
+            getJoyStyle(){
+              let iWidth = document.body.clientWidth;
+              let objStyle = {
+                  width: iWidth + 'px',
+                  height: iWidth + 'px',
+              };
+              return objStyle;
+            },
             doSubmit(){
               alert('双击');
             },
@@ -293,9 +301,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     .joystick_area {
-        width: 100%;
-        height: 400px;
-        background-color: white;
+        background-color: #b2b2b2;
         font-size: 300px;
     }
 </style>
