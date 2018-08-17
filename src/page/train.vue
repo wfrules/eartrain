@@ -1,6 +1,9 @@
 <template>
     <div v-if="$store.state.libLoaded">
-        <div v-show="!revealing" class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">{{joystick.key.caption}}</div>
+        <div v-show="!revealing" class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">
+            <div class="circle" :style="getHintStyle(poolHint, index)" v-for="(poolHint, index) in pool">{{poolHint.caption}}</div>
+            <!--{{joystick.key.caption}}-->
+        </div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
@@ -76,14 +79,23 @@
                                     // debug(data);
                                     switch(evt.type)
                                     {
+                                        case 'start':
+                                            objSelf.joystick.touching = true;
+                                            objSelf.joystick.position = data.position;
+                                            objSelf.joystick.touchBeginAt = moment().format('YYYY-MM-DD hh:mm:ss');
+
+                                            break;
                                         case 'end':
                                             if (objSelf.joystick.distance >= 50) {
                                                 objSelf.touchRelease(objSelf.joystick.key);
                                             }
-                                            objSelf.joystick = {
-                                                key: {caption: '', code: ''},
-                                                distance: 0,
-                                            }
+                                            let dtBegin = moment(objSelf.joystick.touchBeginAt);
+                                            let dtEnd = moment();
+                                            console.log(dtBegin.format('YYYY-MM-DD hh:mm:ss'));
+                                            console.log(dtEnd.format('YYYY-MM-DD hh:mm:ss'));
+                                            let iDiff =  dtEnd.diff(dtBegin, 'seconds');
+                                            console.log(iDiff);
+                                            objSelf.joystick = objSelf.getEmptyStick();
                                             break;
                                     }
                                   })
@@ -179,6 +191,63 @@
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
         },
         methods: {
+            getEmptyStick(){
+                return {
+                    touching: false,
+                    key: {caption: '', code: ''},
+                    distance: 0,
+                    position: {x: 0, y: 0},
+                    touchBeginAt: moment().format('YYYY-MM-DD hh:mm:ss'),
+                    touchEndAt: moment().format('YYYY-MM-DD hh:mm:ss'),
+                };
+            },
+            getPosition(x, y, radius, index){
+                // {caption: 1, code: 'C3'},
+                // {caption: 2, code: 'D3'},
+                // {caption: 3, code: 'E3'},
+                // {caption: 4, code: 'F3'},
+                // {caption: 5, code: 'G3'},
+                // {caption: 6, code: 'A3'},
+                // {caption: 7, code: 'B3'},
+                // {caption: 'i', code: 'C4'},
+                let iDistance = 100;
+                let arrPos = [
+                    {left: x - iDistance - (radius/2), top: y - iDistance - (radius/2)},//1
+                    {left: x - iDistance - (radius/2), top: y - (radius/2)},//2
+                    {left: x - iDistance - (radius/2), top: y + iDistance - (radius/2)},//3
+                    {left: x - (radius/2), top: y + iDistance - (radius/2)},//4
+                    {left: x + iDistance - (radius/2), top: y + iDistance - (radius/2)},//5
+                    {left: x + iDistance - (radius/2), top:  y - (radius/2)},//6
+                    {left: x + iDistance - (radius/2), top: y - iDistance - (radius/2)},//7
+                    {left: x - (radius/2), top: y - iDistance - (radius/2)}//8
+                ];
+                return arrPos[index];
+            },
+            getHintStyle(aHint, index){
+                let objStyle = {};
+                if (this.joystick.touching)
+                {
+                    objStyle.display = "block";
+                    let iWidth = document.body.clientWidth;
+                    let iRadius = iWidth * 0.15;
+                    objStyle.width = iRadius + 'px';
+                    objStyle.height = iRadius + 'px';
+                    let objPosition = this.getPosition(this.joystick.position.x, this.joystick.position.y, iRadius,  index);
+                    objStyle.left = objPosition.left + 'px';
+                    objStyle.top = objPosition.top + 'px';
+                    objStyle['font-size'] = '20px';
+                    if (aHint.caption == this.joystick.key.caption)
+                    {
+                        objStyle['background-color'] = 'yellow';
+                    }
+                }
+                else
+                {
+                    objStyle.display = "none";
+                }
+
+                return objStyle;
+            },
             getJoyStyle(){
               let iWidth = document.body.clientWidth;
               let objStyle = {
@@ -253,10 +322,7 @@
         },
         data() {
             return {
-                joystick: {
-                    key: {caption: '', code: ''},
-                    distance: 0,
-                },
+                joystick: this.getEmptyStick(),
                 revealing: false,
                 questions: [],
                 answers: [],
@@ -302,6 +368,19 @@
 <style scoped>
     .joystick_area {
         background-color: #b2b2b2;
-        font-size: 300px;
+        font-size: 200px;
+        position: relative;
+        text-align: center;
     }
+    .circle {;
+        position: absolute;
+        background-color:#cccccc;
+        border-radius: 50%;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
 </style>
