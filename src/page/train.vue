@@ -4,7 +4,7 @@
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <icon v-if="revealing && questResult" type="success" is-msg></icon>
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
-        <div v-show="!revealing" class="joystick_area" id="zone_joystick" ref="joystick"></div>
+        <div v-show="!revealing" class="joystick_area" id="zone_joystick" ref="joystick">{{joyKey.caption}}</div>
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard> -->
         <flexbox>
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
@@ -65,9 +65,7 @@
                  this.$nextTick(() => {
                                 let objSelf = this;
                                 var options = {
-                                    zone: this.$refs.joystick,//document.getElementById('zone_joystick'),
-                                    mode: 'static',
-                                    position: {left: '50%', top: '43%'},
+                                    zone: this.$refs.joystick,
                                     color: 'red'
                                 };            
                                 var objJoystick = require('nipplejs').create(options);
@@ -174,6 +172,7 @@
         methods: {
             keyPress(keyObj){
                 this.$refs.ng.change(keyObj);
+                this.joyKey = {caption: '', code: ''};
             },           
             stop() {
                 this.play_end_at =  moment().format('YYYY-MM-DD hh:mm:ss');
@@ -235,7 +234,7 @@
         },
         data() {
             return {
-                joyKey: null,
+                joyKey: {caption: '', code: ''},
                 joystick: null,
                 revealing: false,
                 questions: [],
@@ -284,5 +283,6 @@
         width: 100%;
         height: 400px;
         background-color: blue;
+        font-size: 300px;
     }
 </style>
