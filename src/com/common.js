@@ -139,6 +139,10 @@ let common = {
 // MIDI.keyToNote = object; // A0 => 21
 // MIDI.noteToKey = object; // 21 => A0
 
-    }
+    },
+    playSound(src){        
+        var audio = new Audio(src);
+        audio.play();
+    },
 }
 export default common;

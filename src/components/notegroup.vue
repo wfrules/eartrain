@@ -38,12 +38,29 @@
         },                    
         methods: {
             check(answers){
+                let bRight = true;
                 for(let i = 0; i < this.$props.notes.length; i++)
                 {
                     let iAnswered = _common.getValFromParams(this.$props.notes[i]);
-                    let iCorret = _common.getValFromParams(answers[i]);                    
-                    this.$props.notes[i].state = (iAnswered == iCorret)?1:2;
-                }    
+                    let iCorret = _common.getValFromParams(answers[i]); 
+                    if (iAnswered == iCorret)     
+                    {
+                        this.$props.notes[i].state = 1;
+                    }              
+                    else 
+                    {
+                        this.$props.notes[i].state = 2;
+                        bRight = false;
+                    }
+                } 
+                if (bRight)   
+                {
+                    _common.playSound("/static/sound/right.mp3");
+                }
+                else 
+                {
+                    _common.playSound("/static/sound/wrong.mp3");
+                }
             },
             toHidding(){//定位到下一个隐藏按钮
                 let bFound= false;
@@ -147,6 +164,7 @@
                         this.toHidding();
                         break;
                 }
+                _common.playSound("/static/sound/keypress.wav");
             },
            noteClick(index){
                 this.activeIndex = index;
