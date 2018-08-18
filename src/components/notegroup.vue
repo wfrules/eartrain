@@ -164,7 +164,7 @@
                         this.toHidding();
                         break;
                 }
-                _common.playSound("/static/sound/keypress.wav");
+                _common.playSound("/static/sound/keypress.mp3");
             },
            noteClick(index){
                 this.activeIndex = index;
