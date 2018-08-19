@@ -1,14 +1,11 @@
 <template>
     <div v-if="$store.state.libLoaded">
         <div class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">
-            <div class="circle" :style="getHintStyle(poolHint, index)" v-for="(poolHint, index) in pool">{{poolHint.caption}}</div>
+            <div v-if="!revealing" class="circle" :style="getHintStyle(poolHint, index)" v-for="(poolHint, index) in pool">{{poolHint.caption}}</div>
             <!--{{joystick.key.caption}}-->
         </div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
-        <icon v-if="revealing && questResult" type="success" is-msg></icon>
-        <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
-
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="touchEnd"></keyboard> -->
         <flexbox v-if="false">
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
@@ -85,22 +82,34 @@
                                             objSelf.joystick.touchBeginAt = moment();
 
                                             break;
-                                        case 'end':
+                                        case 'end':                                            
                                             if (objSelf.revealing)
                                             {
-                                                let iDiff =  moment(objSelf.now).diff(objSelf.joystick.touchBeginAt, 'seconds');
-                                                if (iDiff >= 2){
-                                                    objSelf.shuffle();
+                                                if (objSelf.joystick.distance >= 50) {                   
+                                                    if (objSelf.joystick.angle.degree <= 180)
+                                                    {
+                                                        objSelf.playSheet();
+                                                    }
+                                                    else
+                                                    {
+                                                        objSelf.doPlay();                                           
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    objSelf.doPlay();
-                                                }                                                    
-                                                
+                                                    let iDiff =  moment(objSelf.now).diff(objSelf.joystick.touchBeginAt, 'seconds');
+                                                    if (iDiff >= 1){
+                                                        objSelf.shuffle();
+                                                    }
+                                                    else
+                                                    {
+                                                        objSelf.doPlay();
+                                                    }   
+                                                }                                                
                                             }
                                             else {
                                                 if (objSelf.joystick.distance >= 50) {
-                                                    objSelf.touchRelease(objSelf.joystick.key);
+                                                    objSelf.$refs.ng.change(objSelf.getActiveKey());
                                                 }
                                                 else 
                                                 {//小范围移动
@@ -119,27 +128,7 @@
                                     }
                                   })
                                   .on('move', function(evt, data) {
-                                          let iAngle = data.angle.degree;
-                                          let iRet = -1;
-                                          for(let i = 0; i < 8; i++)
-                                          {
-                                              let iBegin = 22.5 + i*45;
-                                              let iEnd = 22.5 + (i+1)*45;
-                                              if(((iAngle >= iBegin) && (iAngle < iEnd))
-                                                  ||
-                                                  (((iAngle + 360) >= iBegin) && ((iAngle + 360) < iEnd))
-                                              )
-                                              {
-                                                  iRet = i;
-                                                  break;
-                                              }
-                                          }
-                                          let arrStand = [ 7, 8, 1, 2, 3, 4, 5, 6];
-                                          let iNote = arrStand[iRet];
-                                          if (data.distance >= 50)
-                                          {
-                                              objSelf.joystick.key = objSelf.pool[iNote - 1];
-                                          }
+                                          objSelf.joystick.angle.degree = data.angle.degree;  
                                           objSelf.joystick.distance = data.distance;
                                   })
                                   .on('dir:up plain:up dir:left plain:left dir:down ' +
@@ -147,6 +136,7 @@
                                         function(evt, data) {
                                             // dump(evt.type);
                                             // console.log('direction');
+                                            // console.log(evt);
                                           }
                                        )
                                   .on('pressure', function(evt, data) {
@@ -210,6 +200,26 @@
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
         },
         methods: {
+            getActiveKey(){
+                let iAngle = this.joystick.angle.degree;
+                let iRet = -1;
+                for(let i = 0; i < 8; i++)
+                {
+                  let iBegin = 22.5 + i*45;
+                  let iEnd = 22.5 + (i+1)*45;
+                  if(((iAngle >= iBegin) && (iAngle < iEnd))
+                      ||
+                      (((iAngle + 360) >= iBegin) && ((iAngle + 360) < iEnd))
+                  )
+                  {
+                      iRet = i;
+                      break;
+                  }
+                }
+                let arrStand = [ 7, 8, 1, 2, 3, 4, 5, 6];
+                let iNote = arrStand[iRet];
+                return this.pool[iNote - 1];
+            },
             canDoReveal(){
                 let bRet = false;
                 if (this.showReveal)
@@ -222,11 +232,11 @@
             getEmptyStick(){
                 return {
                     touching: false,
-                    key: {caption: '', code: ''},
                     distance: 0,
                     position: {x: 0, y: 0},
                     touchBeginAt: moment().format('YYYY-MM-DD HH:mm:ss'),
                     touchEndAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    angle: {degree: 0},
                 };
             },
             getPosition(x, y, radius, index){
@@ -264,7 +274,7 @@
                     objStyle.left = objPosition.left + 'px';
                     objStyle.top = objPosition.top + 'px';
                     objStyle['font-size'] = '20px';
-                    if ((aHint.caption == this.joystick.key.caption) && (this.joystick.distance >= 50))
+                    if ((aHint.caption == this.getActiveKey().caption) && (this.joystick.distance >= 50))
                     {
                         objStyle['background-color'] = 'yellow';
                     }
@@ -291,10 +301,7 @@
             },
             doSubmit(){
               alert('双击');
-            },
-            touchRelease(keyObj){
-                this.$refs.ng.change(keyObj);
-            },           
+            },         
             stop() {
                 this.play_end_at =  moment().format('YYYY-MM-DD HH:mm:ss');
                 _common.stop();
@@ -312,15 +319,19 @@
             },
             doPlay(){
                 this.stop();
-                this.play();
+                this.play(this.answers);
             },
-            play() {
+            play(notes) {
                 let dRate = 0.5;
-                for (let i = 0; i < this.answers.length; i++) {
-                    _common.play(_common.getValFromParams(this.answers[i]), {delay: i * dRate});
+                for (let i = 0; i < notes.length; i++) {
+                    _common.play(_common.getValFromParams(notes[i]), {delay: i * dRate});
                 }
-                let dDelay = this.answers.length * dRate;
+                let dDelay = notes.length * dRate;
                 this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD HH:mm:ss');
+            },
+            playSheet(){
+                this.stop();
+                this.play(this.questions);                               
             },
             reveal() {
                 this.$refs.ng.activeIndex = 0;
@@ -352,7 +363,7 @@
                     }
                 });
                 this.revealing = false;
-                this.play();
+                this.doPlay();
             },
         },
         data() {
