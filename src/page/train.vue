@@ -1,6 +1,6 @@
 <template>
     <div v-if="$store.state.libLoaded">
-        <div v-show="!revealing" class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">
+        <div class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">
             <div class="circle" :style="getHintStyle(poolHint, index)" v-for="(poolHint, index) in pool">{{poolHint.caption}}</div>
             <!--{{joystick.key.caption}}-->
         </div>
@@ -10,7 +10,7 @@
         <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
 
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="touchEnd"></keyboard> -->
-        <flexbox>
+        <flexbox v-if="false">
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-bofang"></use>
@@ -86,19 +86,33 @@
 
                                             break;
                                         case 'end':
-                                            if (objSelf.joystick.distance >= 50) {
-                                                objSelf.touchRelease(objSelf.joystick.key);
-                                            }
-                                            else 
-                                            {//小范围移动
-                                                if (objSelf.canDoReveal())
-                                                {
-                                                    objSelf.reveal();
+                                            if (objSelf.revealing)
+                                            {
+                                                let iDiff =  moment(objSelf.now).diff(objSelf.joystick.touchBeginAt, 'seconds');
+                                                if (iDiff >= 2){
+                                                    objSelf.shuffle();
                                                 }
-                                                else 
+                                                else
                                                 {
                                                     objSelf.doPlay();
-                                                };                                                                                              
+                                                }                                                    
+                                                
+                                            }
+                                            else {
+                                                if (objSelf.joystick.distance >= 50) {
+                                                    objSelf.touchRelease(objSelf.joystick.key);
+                                                }
+                                                else 
+                                                {//小范围移动
+                                                    if (objSelf.canDoReveal())
+                                                    {
+                                                        objSelf.reveal();
+                                                    }
+                                                    else 
+                                                    {
+                                                        objSelf.doPlay();
+                                                    };                                                                                              
+                                                }
                                             }
                                             objSelf.joystick = objSelf.getEmptyStick();
                                             break;
@@ -201,7 +215,7 @@
                 if (this.showReveal)
                 {
                     let iDiff =  moment(this.now).diff(this.joystick.touchBeginAt, 'seconds');
-                    bRet = (iDiff > 2);
+                    bRet = (iDiff >= 2);
                 }
                 return bRet;
             },
@@ -250,7 +264,7 @@
                     objStyle.left = objPosition.left + 'px';
                     objStyle.top = objPosition.top + 'px';
                     objStyle['font-size'] = '20px';
-                    if (aHint.caption == this.joystick.key.caption)
+                    if ((aHint.caption == this.joystick.key.caption) && (this.joystick.distance >= 50))
                     {
                         objStyle['background-color'] = 'yellow';
                     }
