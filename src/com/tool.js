@@ -22,11 +22,7 @@ let mTool = {
     for (let i = 0; i < arrCookie.length; i++) {
       let arr = arrCookie[i].split("=");
       if (arr[0] == "api_token") {
-        if (unescape(arr[1]) == "") {
           return unescape(arr[1]);
-        } else {
-          return unescape(arr[1]) + "," + '';
-        }
       }
 
     }
@@ -83,7 +79,7 @@ isWechat: () => {
     params.append('func', opt.action == undefined ? '' : opt.action);
     params.append('parms', JSON.stringify(arrMyParams));
     axios.post( opt.url.toLowerCase(), params).then(res=>{
-        if (res.data.result == 0) {
+        if (res.data.status == 0) {
           opt.func(res.data);
         }else {
           console.log(opt.action == undefined ? '' : opt.action);

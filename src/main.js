@@ -39,42 +39,23 @@ let routerDeal = function(to, from, next){
                 next();
             }
             else {
-                let objElem = {};
-                objElem.url = '/api/common/purchaseGrantList';
-                objElem.action = '查询权限列表';//先这样吧后面再开新接口
-                objElem.json = {parms: {}, token: store.state.token};
-                objElem.func = (json) => {
-                    let arrGrantList = json.list;
-
-                    let objProfile = {};
-                    objProfile.url = '/api/common/getGrants';
-                    objProfile.action = '身份校验';
-                    objProfile.json = {parms: {}, token: store.state.token};
-                    objProfile.func = (profile) => {
-                        let objProfile =  {
-                            inited: true,
-                            id: profile.uid,
-                            name: profile.uname,
-                            cid: profile.cid,
-                            grants: {},
-                            postname:profile.postname,
-                            utype:profile.utype
-                        };
-                        profile.pgrant.split(',').forEach(grantValue=>{
-                            arrGrantList.forEach(aGrant=>{
-                                if (Number(aGrant.id) == Number(grantValue))
-                                {
-                                    objProfile.grants[aGrant.gcode] = true;
-                                }
-                            });
-                        });
-                        store.dispatch(types.SET_PROFILE, objProfile);
-                        next();
-                    }
-                    mTool.request(objProfile);
+                let objProfile = {};
+                objProfile.url = '/api/user/getprofile';
+                objProfile.action = '身份校验';
+                objProfile.json = {parms: {}, api_token: store.state.token};
+                objProfile.func = (profile) => {
+                    let objProfile =  {
+                        inited: true,
+                        id: profile.uid,
+                        name: profile.uname,
+                        grants: {},
+                        postname:profile.postname,
+                        utype:profile.utype
+                    };
+                    store.dispatch(types.SET_PROFILE, objProfile);
+                    next();
                 }
-                mTool.request(objElem);
-
+                mTool.request(objProfile);
             }
         }
     }

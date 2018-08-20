@@ -18,10 +18,10 @@ let request = function(opt) {
   let params = new URLSearchParams();
   params.append('func', opt.action == undefined ? '' : opt.action);
   params.append('parms', JSON.stringify(arrMyParams));
-  params.append('token', this.$store.state.token);
+  params.append('api_token', this.$store.state.api_token);
   axios.post( opt.url.toLowerCase(), params).then( res=>{
       this.$vux.loading.hide();
-      if (res.data.result == 0) {
+      if (res.data.status == 0) {
         opt.func(res.data);
       }
       else {
@@ -29,16 +29,16 @@ let request = function(opt) {
         if (opt.errorfunc != undefined && opt.errorfunc != "") {
           opt.errorfunc(res.data);
         } else {
-          if (res.data.error) {
+          if (res.data.message) {
             this.$vux.alert.show({
-              title: '出错了',
+              title: '出错了1',
               content: res.data.error,
             });
           }
           else
           {
             this.$vux.alert.show({
-              title: '出错了',
+              title: '出错了2',
               content: res.data
             });
           }
@@ -49,8 +49,8 @@ let request = function(opt) {
     err=>{
       this.$vux.loading.hide();
       this.$vux.alert.show({
-        title: '出错了',
-        content: '出错了',
+        title: '出错了3',
+        content: '出错了3',
       });
     }
   );
