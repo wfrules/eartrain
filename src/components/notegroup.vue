@@ -60,7 +60,7 @@
                 else 
                 {
                     _common.playSound("/static/sound/wrong.mp3");
-                }
+                }               
             },
             toHidding(){//定位到下一个隐藏按钮
                 let bFound= false;
