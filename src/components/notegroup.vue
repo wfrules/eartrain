@@ -101,11 +101,21 @@
                     // this.$refs['note'+ i].reveal();
                 }
             },
+            first(){
+                this.activeIndex = 0;
+                _common.playSound("/static/sound/page.mp3");
+            },
+            last(){
+                this.activeIndex = this.$props.notes.length - 1;
+                _common.playSound("/static/sound/page.mp3");
+            },
             prev(){
                 this.activeIndex = Math.max(this.activeIndex-1, 0);
+                _common.playSound("/static/sound/page.mp3");
             },
             next(){
                 this.activeIndex = Math.min(this.activeIndex + 1, this.$props.notes.length - 1);
+                _common.playSound("/static/sound/page.mp3");
             },
             reset(){
                 this.$props.notes[this.activeIndex].sign = _common.sign.Normal;
