@@ -4,7 +4,9 @@
 
 技术栈 VUE全家桶  移动端框架VUX 音乐播放  MIDI.JS
 持续完善中....
-[demo](http://eartrain.mylo2o.net "请在移动端观看")  
+
+
+[demo请戳这里](http://eartrain.mylo2o.net "请在移动端观看")  
 
 > ear train
 
