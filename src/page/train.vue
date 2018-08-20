@@ -42,7 +42,7 @@
     import _common from '@/com/common';
     import notegroup from '@/components/notegroup';
     import keyboard from '@/components/keyboard';
-
+    const TouchLimit = 50;//圆周半径
     export default {
         name: 'Train',
         computed: {           
@@ -86,8 +86,8 @@
                                             if (objSelf.joystick.touching)
                                             {
                                                 if (objSelf.revealing)
-                                                {
-                                                    if (objSelf.joystick.distance >= 50) {
+                                                {//揭示状态
+                                                    if (objSelf.joystick.distance >= TouchLimit) {
                                                         if (objSelf.joystick.angle.degree <= 180)
                                                         {
                                                             objSelf.playSheet();
@@ -97,32 +97,14 @@
                                                             objSelf.doPlay();
                                                         }
                                                     }
-                                                    else
-                                                    {
-                                                        let iDiff =  moment(objSelf.now).diff(objSelf.joystick.touchBeginAt, 'seconds');
-                                                        if (iDiff >= 1){
-                                                            objSelf.shuffle();
-                                                        }
-                                                        else
-                                                        {
-                                                            objSelf.doPlay();
-                                                        }
-                                                    }
                                                 }
-                                                else {
-                                                    if (objSelf.joystick.distance >= 50) {
+                                                else {//考核状态
+                                                    if (objSelf.joystick.distance >= TouchLimit) {
                                                         objSelf.$refs.ng.change(objSelf.getActiveKey());
                                                     }
                                                     else
                                                     {//小范围移动
-                                                        if (objSelf.canDoReveal())
-                                                        {
-                                                            objSelf.reveal();
-                                                        }
-                                                        else
-                                                        {
-                                                            objSelf.doPlay();
-                                                        };
+                                                        objSelf.doPlay();
                                                     }
                                                 }
                                             }
@@ -194,11 +176,26 @@
                 objSelf.now = moment().format('YYYY-MM-DD HH:mm:ss');
                 objSelf.timerCheck = setTimeout(poll, 1000);
 
-                if (objSelf.canDoReveal())
+                if (objSelf.joystick.touching && objSelf.joystick.distance < TouchLimit)
                 {
-                    objSelf.reveal();
+                    if (objSelf.revealing)
+                    {//揭示状态
+                        {//小范围移动
+                            let iDiff =  moment(objSelf.now).diff(objSelf.joystick.touchBeginAt, 'seconds');
+                            if (iDiff >= 1){
+                                objSelf.shuffle();
+                            }
+                        }
+                    }
+                    else {//考核状态
+                        {//小范围移动
+                            if (objSelf.canDoReveal())
+                            {
+                                objSelf.reveal();
+                            }
+                        }
+                    }
                 }
-
             })();                        
         },
         mounted(){                  
@@ -231,7 +228,7 @@
             },
             canDoReveal(){
                 let bRet = false;
-                if (this.showReveal && (this.joystick.distance < 50) && (this.joystick.touching))
+                if (this.showReveal && (this.joystick.distance < TouchLimit) && (this.joystick.touching))
                 {
                     let iDiff =  moment(this.now).diff(this.joystick.touchBeginAt, 'seconds');
                     bRet = (iDiff >= 1);
@@ -283,7 +280,7 @@
                     objStyle.left = objPosition.left + 'px';
                     objStyle.top = objPosition.top + 'px';
                     objStyle['font-size'] = '20px';
-                    if ((aHint.caption == this.getActiveKey().caption) && (this.joystick.distance >= 50))
+                    if ((aHint.caption == this.getActiveKey().caption) && (this.joystick.distance >= TouchLimit))
                     {
                         objStyle['background-color'] = 'yellow';
                     }
@@ -351,7 +348,8 @@
             notePlay(note) {
                 console.log(note);
             },
-            shuffle() {                
+            shuffle() {
+                this.joystick.touching = false;
                 let arrQuests = [];                
                 for (let i = 0; i < 6; i++) {
                     let idx = _common.randomNumBoth(0, 7);
