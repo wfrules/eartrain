@@ -1,0 +1,6 @@
+{
+  "protocol": "http",
+  "apiDomain": "eartrainapi.debug.com",
+  "apiDomain_remote": "eartrainapi.debug.com",
+  "apiDomain_local": "eartrainapi.debug.com"
+}

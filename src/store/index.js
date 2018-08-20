@@ -22,7 +22,6 @@ const state = {
           inited: false,
           id: 0,//缓存当前用户id,尽量不用
           name: '',
-          cid: 0,//缓存当前用户的公司id
           grants: {},//所有权限列表
       postname:'',
       utype:0

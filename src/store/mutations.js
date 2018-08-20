@@ -1,5 +1,6 @@
 import * as types  from './mutation-types.js'
 import _common from '../com/common.js'
+import mTool from '@/com/tool'
 export default {
   // 请求数据时loading
   [types.FETCH_LOADING] (state, res) {
@@ -8,7 +9,7 @@ export default {
   // 设置Token
   [types.SET_TOKEN] (state, res) {
     state.token = res;
-      _common.setCookie(res);
+      mTool.setCookie(res);
   },
 
   // 设置身份信息
