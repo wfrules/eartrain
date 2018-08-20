@@ -104,7 +104,29 @@
                                                     }
                                                     else
                                                     {//小范围移动
-                                                        objSelf.doPlay();
+                                                        if (objSelf.joystick.distance > 5)
+                                                        {//5和limit之间的小范围移动
+                                                            if (objSelf.joystick.angle.degree > 45 && objSelf.joystick.angle.degree <= 135)
+                                                            {
+                                                                objSelf.$refs.ng.first();
+                                                            }
+                                                            else if (objSelf.joystick.angle.degree > 135 && objSelf.joystick.angle.degree <= 225)
+                                                            {
+                                                                objSelf.$refs.ng.prev();
+                                                            }
+                                                            else if (objSelf.joystick.angle.degree > 225 && objSelf.joystick.angle.degree <= 315)
+                                                            {
+                                                                objSelf.$refs.ng.last();
+                                                            }
+                                                            else
+                                                            {
+                                                                objSelf.$refs.ng.next();
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            objSelf.doPlay();
+                                                        }
                                                     }
                                                 }
                                             }

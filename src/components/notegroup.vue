@@ -101,11 +101,30 @@
                     // this.$refs['note'+ i].reveal();
                 }
             },
+            first(){
+                if (this.activeIndex != 0)
+                {
+                    _common.playSound("/static/sound/page.mp3");
+                    this.activeIndex = 0;
+                }
+            },
+            last(){
+                if (this.activeIndex != this.$props.notes.length - 1) {
+                    _common.playSound("/static/sound/page.mp3");
+                    this.activeIndex = this.$props.notes.length - 1;
+                }
+            },
             prev(){
-                this.activeIndex = Math.max(this.activeIndex-1, 0);
+                if (this.activeIndex != 0) {
+                    _common.playSound("/static/sound/page.mp3");
+                    this.activeIndex = Math.max(this.activeIndex-1, 0);
+                }
             },
             next(){
-                this.activeIndex = Math.min(this.activeIndex + 1, this.$props.notes.length - 1);
+                if (this.activeIndex != this.$props.notes.length - 1) {
+                    _common.playSound("/static/sound/page.mp3");
+                    this.activeIndex = Math.min(this.activeIndex + 1, this.$props.notes.length - 1);
+                }
             },
             reset(){
                 this.$props.notes[this.activeIndex].sign = _common.sign.Normal;
