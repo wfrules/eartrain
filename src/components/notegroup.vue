@@ -124,7 +124,7 @@
                 if (this.activeIndex != this.$props.notes.length - 1) {
                     _common.playSound("/static/sound/page.mp3");
                     this.activeIndex = Math.min(this.activeIndex + 1, this.$props.notes.length - 1);
-                }
+                };
             },
             reset(){
                 this.$props.notes[this.activeIndex].sign = _common.sign.Normal;
