@@ -82,45 +82,48 @@
                                             objSelf.joystick.touchBeginAt = moment();
 
                                             break;
-                                        case 'end':                                            
-                                            if (objSelf.revealing)
+                                        case 'end':
+                                            if (objSelf.joystick.touching)
                                             {
-                                                if (objSelf.joystick.distance >= 50) {                   
-                                                    if (objSelf.joystick.angle.degree <= 180)
-                                                    {
-                                                        objSelf.playSheet();
-                                                    }
-                                                    else
-                                                    {
-                                                        objSelf.doPlay();                                           
-                                                    }
-                                                }
-                                                else
+                                                if (objSelf.revealing)
                                                 {
-                                                    let iDiff =  moment(objSelf.now).diff(objSelf.joystick.touchBeginAt, 'seconds');
-                                                    if (iDiff >= 1){
-                                                        objSelf.shuffle();
+                                                    if (objSelf.joystick.distance >= 50) {
+                                                        if (objSelf.joystick.angle.degree <= 180)
+                                                        {
+                                                            objSelf.playSheet();
+                                                        }
+                                                        else
+                                                        {
+                                                            objSelf.doPlay();
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        objSelf.doPlay();
-                                                    }   
-                                                }                                                
-                                            }
-                                            else {
-                                                if (objSelf.joystick.distance >= 50) {
-                                                    objSelf.$refs.ng.change(objSelf.getActiveKey());
-                                                }
-                                                else 
-                                                {//小范围移动
-                                                    if (objSelf.canDoReveal())
-                                                    {
-                                                        objSelf.reveal();
+                                                        let iDiff =  moment(objSelf.now).diff(objSelf.joystick.touchBeginAt, 'seconds');
+                                                        if (iDiff >= 1){
+                                                            objSelf.shuffle();
+                                                        }
+                                                        else
+                                                        {
+                                                            objSelf.doPlay();
+                                                        }
                                                     }
-                                                    else 
-                                                    {
-                                                        objSelf.doPlay();
-                                                    };                                                                                              
+                                                }
+                                                else {
+                                                    if (objSelf.joystick.distance >= 50) {
+                                                        objSelf.$refs.ng.change(objSelf.getActiveKey());
+                                                    }
+                                                    else
+                                                    {//小范围移动
+                                                        if (objSelf.canDoReveal())
+                                                        {
+                                                            objSelf.reveal();
+                                                        }
+                                                        else
+                                                        {
+                                                            objSelf.doPlay();
+                                                        };
+                                                    }
                                                 }
                                             }
                                             objSelf.joystick = objSelf.getEmptyStick();
@@ -190,6 +193,12 @@
                 clearTimeout(objSelf.timerCheck);
                 objSelf.now = moment().format('YYYY-MM-DD HH:mm:ss');
                 objSelf.timerCheck = setTimeout(poll, 1000);
+
+                if (objSelf.canDoReveal())
+                {
+                    objSelf.reveal();
+                }
+
             })();                        
         },
         mounted(){                  
@@ -222,10 +231,10 @@
             },
             canDoReveal(){
                 let bRet = false;
-                if (this.showReveal)
+                if (this.showReveal && (this.joystick.distance < 50) && (this.joystick.touching))
                 {
                     let iDiff =  moment(this.now).diff(this.joystick.touchBeginAt, 'seconds');
-                    bRet = (iDiff >= 2);
+                    bRet = (iDiff >= 1);
                 }
                 return bRet;
             },
@@ -334,9 +343,10 @@
                 this.play(this.questions);                               
             },
             reveal() {
+                this.joystick.touching = false;
                 this.$refs.ng.activeIndex = 0;
                 this.$refs.ng.check(this.answers);
-                this.revealing = true;                
+                this.revealing = true;
             },
             notePlay(note) {
                 console.log(note);
