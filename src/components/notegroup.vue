@@ -52,15 +52,33 @@
                         this.$props.notes[i].state = 2;
                         bRight = false;
                     }
-                } 
-                if (bRight)   
-                {
-                    _common.playSound("/static/sound/right.mp3");
                 }
-                else 
-                {
-                    _common.playSound("/static/sound/wrong.mp3");
-                }               
+
+                //
+                let arrQuestions = this.$props.notes.map(note=>{
+                    return _common.getValFromParams(note);
+                });
+
+                let arrAnswers = answers.map(note=>{
+                    return _common.getValFromParams(note);
+                });
+
+
+                let objOptions = {};
+                objOptions.url = '/api/train/submit';
+                objOptions.action = '提交答案';
+                objOptions.json = {content: arrQuestions.join(','), answer: arrAnswers.join(',')};
+                objOptions.func = (json) => {
+                    if (bRight)
+                    {
+                        _common.playSound("/static/sound/right.mp3");
+                    }
+                    else
+                    {
+                        _common.playSound("/static/sound/wrong.mp3");
+                    }
+                }
+                this.request(objOptions);
             },
             toHidding(){//定位到下一个隐藏按钮
                 let bFound= false;
@@ -97,8 +115,6 @@
                 {
                     let objNoteData = this.$props.notes[i];
                     objNoteData.display =  this.$props.notes[i].val;
-                    
-                    // this.$refs['note'+ i].reveal();
                 }
             },
             first(){

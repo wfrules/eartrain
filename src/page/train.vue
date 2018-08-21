@@ -178,18 +178,6 @@
             },
         },
         created() {
-
-
-                let objOptions = {};
-                objOptions.url = '/api/train/submit';
-                objOptions.action = '提交答案';
-                objOptions.json = {content: 'abc', answer: 'def'};
-                objOptions.func = (json) => {
-                    console.log(json);
-                }
-                this.request(objOptions); 
-
-
             let arrStandards = [];
             for (let i = 1; i <= 7; i++) {
                 let objNote = {

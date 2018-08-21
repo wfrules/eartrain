@@ -43,14 +43,11 @@ let routerDeal = function(to, from, next){
                 objProfile.url = '/api/user/getprofile';
                 objProfile.action = '身份校验';
                 objProfile.json = {parms: {}, api_token: store.state.token};
-                objProfile.func = (profile) => {
+                objProfile.func = (json) => {
                     let objProfile =  {
                         inited: true,
-                        id: profile.uid,
-                        name: profile.uname,
-                        grants: {},
-                        postname:profile.postname,
-                        utype:profile.utype
+                        id: json.profile.id,
+                        name: json.profile.name,
                     };
                     store.dispatch(types.SET_PROFILE, objProfile);
                     next();

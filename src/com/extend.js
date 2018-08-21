@@ -18,7 +18,7 @@ let request = function(opt) {
   let params = new URLSearchParams();
   params.append('func', opt.action == undefined ? '' : opt.action);
   params.append('parms', JSON.stringify(arrMyParams));
-  params.append('api_token', this.$store.state.api_token);
+  params.append('api_token', this.$store.state.token);
   axios.post( opt.url.toLowerCase(), params).then( res=>{
       this.$vux.loading.hide();
       if (res.data.status == 0) {
