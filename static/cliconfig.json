@@ -1,6 +1,6 @@
 {
   "protocol": "http",
   "apiDomain": "eartrainapi.debug.com",
-  "apiDomain_remote": "eartrainapi.debug.com",
+  "apiDomain_remote": "et.mylo2o.net:55080",
   "apiDomain_local": "eartrainapi.debug.com"
 }
