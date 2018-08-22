@@ -1,11 +1,13 @@
 <template>
-    <div v-if="$store.state.libLoaded">
+    <div v-if="$store.state.libLoaded">        
         <div class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">
             <div v-if="!revealing" class="circle" :style="getHintStyle(poolHint, index)" v-for="(poolHint, index) in pool">{{poolHint.caption}}</div>
             <!--{{joystick.key.caption}}-->
         </div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
+        <div>正确数{{score.right}}</div>
+        <div>错误数{{score.wrong}}</div>
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="touchEnd"></keyboard> -->
         <svg class="icon" aria-hidden="true" @click="toSetting" v-if="$store.state.token != ''">
             <use xlink:href="#icon-gerenzhongxin"></use>
@@ -356,7 +358,12 @@
                 this.play(this.answers);
             },
             play(notes) {
-                let dRate = 0.5;
+                let dBpm  = this.$store.state.profile.speed;
+                if(!dBpm)
+                {
+                    throw new Error('速度不能为0');
+                }
+                let dRate = 60 / dBpm;
                 for (let i = 0; i < notes.length; i++) {
                     _common.play(_common.getValFromParams(notes[i]), {delay: i * dRate});
                 }
@@ -372,6 +379,17 @@
                 this.$refs.ng.activeIndex = 0;
                 this.$refs.ng.check(this.answers);
                 this.revealing = true;
+
+                let objOptions = {};
+                objOptions.url = '/api/train/getsum';
+                objOptions.action = '获取分数';
+                objOptions.json = {};
+                objOptions.func = (json) => {
+                    this.score.right = json.right;
+                    this.score.wrong = json.wrong;
+                }
+                this.request(objOptions);
+
             },
             notePlay(note) {
                 console.log(note);
@@ -404,6 +422,10 @@
         },
         data() {
             return {
+                score: {
+                    right: 0,
+                    wrong: 0,
+                },
                 joystick: this.getEmptyStick(),
                 revealing: false,
                 questions: [],
