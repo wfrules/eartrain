@@ -7,6 +7,9 @@
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="touchEnd"></keyboard> -->
+        <svg class="icon" aria-hidden="true" @click="toSetting" v-if="$store.state.token != ''">
+            <use xlink:href="#icon-gerenzhongxin"></use>
+        </svg>
         <flexbox v-if="false">
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
                 <svg class="icon" aria-hidden="true">
@@ -228,6 +231,9 @@
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
         },
         methods: {
+            toSetting(){
+                this.$router.push('/setting');
+            },
             getActiveKey(){
                 let iAngle = this.joystick.angle.degree;
                 let iRet = -1;

@@ -48,6 +48,7 @@ let routerDeal = function(to, from, next){
                         inited: true,
                         id: json.profile.id,
                         name: json.profile.name,
+                        speed: json.profile.speed,
                     };
                     store.dispatch(types.SET_PROFILE, objProfile);
                     next();

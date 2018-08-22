@@ -22,6 +22,16 @@
                     }
                 });
             };
+        },
+        methods: {
+
+        },
+        components: {
+        },
+        data(){
+            return {
+
+            }
         }
     }
 </script>

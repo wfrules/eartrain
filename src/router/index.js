@@ -5,6 +5,7 @@ import Train from '@/page/train'
 Vue.use(Router)
 
 const Login = r => require.ensure([], () => r(require('@/page/login.vue')), 'login')//登入
+const Setting = r => require.ensure([], () => r(require('@/page/setting.vue')), 'setting')//设置
 
 export default new Router({
     routes: [
@@ -17,6 +18,12 @@ export default new Router({
             path: '/train',
             name: 'Train',
             component: Train
+        },
+        {
+            path: '/setting',
+            name: 'setting',
+            component: Setting,
+            meta: {title: '系统设置'},
         },
         {
             path: '/login',

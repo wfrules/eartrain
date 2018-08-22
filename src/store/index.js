@@ -22,9 +22,8 @@ const state = {
           inited: false,
           id: 0,//缓存当前用户id,尽量不用
           name: '',
-          grants: {},//所有权限列表
-      postname:'',
-      utype:0
+          speed: 0,
+          utype:0
       },
   grantList: {
     inited: false,//是否初始化
