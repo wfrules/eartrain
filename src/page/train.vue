@@ -6,12 +6,19 @@
         </div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
-        <div>正确数{{score.right}}</div>
-        <div>错误数{{score.wrong}}</div>
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="touchEnd"></keyboard> -->
-        <svg class="icon" aria-hidden="true" @click="toSetting" v-if="$store.state.token != ''">
-            <use xlink:href="#icon-gerenzhongxin"></use>
-        </svg>
+        <flexbox>
+            <flexbox-item>
+            <svg class="icon" aria-hidden="true" @click="toSetting" v-if="$store.state.token != ''">
+                <use xlink:href="#icon-gerenzhongxin"></use>
+            </svg>
+            </flexbox-item>
+        <flexbox-item>
+            <svg class="icon" aria-hidden="true" @click="toStat" v-if="$store.state.token != ''">
+                <use xlink:href="#icon-chengjizhongxin"></use>
+            </svg>   
+        </flexbox-item>
+        </flexbox>     
         <flexbox v-if="false">
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
                 <svg class="icon" aria-hidden="true">
@@ -236,6 +243,9 @@
             toSetting(){
                 this.$router.push('/setting');
             },
+            toStat(){
+                this.$router.push('/stat');
+            },
             getActiveKey(){
                 let iAngle = this.joystick.angle.degree;
                 let iRet = -1;
@@ -378,18 +388,7 @@
                 this.joystick.touching = false;
                 this.$refs.ng.activeIndex = 0;
                 this.$refs.ng.check(this.answers);
-                this.revealing = true;
-
-                let objOptions = {};
-                objOptions.url = '/api/train/getsum';
-                objOptions.action = '获取分数';
-                objOptions.json = {};
-                objOptions.func = (json) => {
-                    this.score.right = json.right;
-                    this.score.wrong = json.wrong;
-                }
-                this.request(objOptions);
-
+                this.revealing = true;               
             },
             notePlay(note) {
                 console.log(note);
@@ -422,10 +421,6 @@
         },
         data() {
             return {
-                score: {
-                    right: 0,
-                    wrong: 0,
-                },
                 joystick: this.getEmptyStick(),
                 revealing: false,
                 questions: [],

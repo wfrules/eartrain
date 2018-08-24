@@ -44,16 +44,15 @@ let request = function(opt) {
           }
         }
       }
-
-    },
-    err=>{
-      this.$vux.loading.hide();
-      this.$vux.alert.show({
-        title: '出错了3',
-        content: '出错了3',
-      });
     }
-  );
+  ).catch(err=>{
+    let sMessage = err.response.data.message;
+    this.$vux.loading.hide();
+    this.$vux.alert.show({
+      title: '接口异常',
+      content: sMessage,
+    });   
+  });
 };
 //根据编码判断是否有某权限
 let checkGrant = function(gCode)

@@ -6,6 +6,7 @@ Vue.use(Router)
 
 const Login = r => require.ensure([], () => r(require('@/page/login.vue')), 'login')//登入
 const Setting = r => require.ensure([], () => r(require('@/page/setting.vue')), 'setting')//设置
+const Stat = r => require.ensure([], () => r(require('@/page/stat.vue')), 'stat')//统计
 
 export default new Router({
     routes: [
@@ -25,6 +26,12 @@ export default new Router({
             component: Setting,
             meta: {title: '系统设置'},
         },
+        {
+            path: '/stat',
+            name: 'stat',
+            component: Stat,
+            meta: {title: '统计中心'},
+        },        
         {
             path: '/login',
             name: 'login',
