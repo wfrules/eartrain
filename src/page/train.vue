@@ -1,5 +1,5 @@
 <template>
-    <div v-if="$store.state.libLoaded">        
+    <div>        
         <div class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">
             <div v-if="!revealing" class="circle" :style="getHintStyle(poolHint, index)" v-for="(poolHint, index) in pool">{{poolHint.caption}}</div>
             <!--{{joystick.key.caption}}-->
@@ -72,103 +72,12 @@
             }
         },
         watch: {
-            '$store.state.libLoaded': function(newVal, oldVal){
-              if(newVal)
-              {
-                 this.$nextTick(() => {
-                                let objSelf = this;
-                                var options = {
-                                    zone: this.$refs.joystick,
-                                    color: 'red'
-                                };            
-                                var objJoystick = require('nipplejs').create(options);
-
-                                  objJoystick.on('start end', function(evt, data) {
-                                    // dump(evt.type);
-                                    // debug(data);
-                                    switch(evt.type)
-                                    {
-                                        case 'start':
-                                            objSelf.joystick.touching = true;
-                                            objSelf.joystick.position = data.position;
-                                            objSelf.joystick.touchBeginAt = moment();
-
-                                            break;
-                                        case 'end':
-                                            if (objSelf.joystick.touching)
-                                            {
-                                                if (objSelf.revealing)
-                                                {//揭示状态
-                                                    if (objSelf.joystick.distance >= TouchLimit) {
-                                                        if (objSelf.joystick.angle.degree <= 180)
-                                                        {
-                                                            objSelf.playSheet();
-                                                        }
-                                                        else
-                                                        {
-                                                            objSelf.doPlay();
-                                                        }
-                                                    }
-                                                }
-                                                else {//考核状态
-                                                    if (objSelf.joystick.distance >= TouchLimit) {
-                                                        objSelf.$refs.ng.change(objSelf.getActiveKey());
-                                                    }
-                                                    else
-                                                    {//小范围移动
-                                                        if (objSelf.joystick.distance > 5)
-                                                        {//5和limit之间的小范围移动
-                                                            if (objSelf.joystick.angle.degree > 45 && objSelf.joystick.angle.degree <= 135)
-                                                            {
-                                                                objSelf.$refs.ng.first();
-                                                            }
-                                                            else if (objSelf.joystick.angle.degree > 135 && objSelf.joystick.angle.degree <= 225)
-                                                            {
-                                                                objSelf.$refs.ng.prev();
-                                                            }
-                                                            else if (objSelf.joystick.angle.degree > 225 && objSelf.joystick.angle.degree <= 315)
-                                                            {
-                                                                objSelf.$refs.ng.last();
-                                                            }
-                                                            else
-                                                            {
-                                                                objSelf.$refs.ng.next();
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            objSelf.doPlay();
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            objSelf.joystick = objSelf.getEmptyStick();
-                                            break;
-                                    }
-                                  })
-                                  .on('move', function(evt, data) {
-                                          objSelf.joystick.angle.degree = data.angle.degree;  
-                                          objSelf.joystick.distance = data.distance;
-                                  })
-                                  .on('dir:up plain:up dir:left plain:left dir:down ' +
-                                        'plain:down dir:right plain:right',
-                                        function(evt, data) {
-                                            // dump(evt.type);
-                                            // console.log('direction');
-                                            // console.log(evt);
-                                          }
-                                       )
-                                  .on('pressure', function(evt, data) {
-                                        // console.log('pressure');
-                                            // debug({
-                                            //   pressure: data
-                                            // });
-                                  });
-
-                           })                     
-                this.shuffle();
-              }
-            },
+            // '$store.state.libLoaded': function(newVal, oldVal){
+            //   if(newVal)
+            //   {
+                 
+            //   }
+            // },
             questions: {
                 handler: function (questions, oldVal) {
                     let bSuccess = true;
@@ -233,8 +142,94 @@
             })();                        
         },
         mounted(){                  
+            let objSelf = this;
+            var options = {
+                zone: this.$refs.joystick,
+                color: 'red'
+            };            
+            var objJoystick = require('nipplejs').create(options);
+            objJoystick.on('start end', function(evt, data) {
+            // dump(evt.type);
+            // debug(data);
+            switch(evt.type)
+            {
+                case 'start':
+                    objSelf.joystick.touching = true;
+                    objSelf.joystick.position = data.position;
+                    objSelf.joystick.touchBeginAt = moment();
 
-                
+                    break;
+                case 'end':
+                    if (objSelf.joystick.touching)
+                    {
+                        if (objSelf.revealing)
+                        {//揭示状态
+                            if (objSelf.joystick.distance >= TouchLimit) {
+                                if (objSelf.joystick.angle.degree <= 180)
+                                {
+                                    objSelf.playSheet();
+                                }
+                                else
+                                {
+                                    objSelf.doPlay();
+                                }
+                            }
+                        }
+                        else {//考核状态
+                            if (objSelf.joystick.distance >= TouchLimit) {
+                                objSelf.$refs.ng.change(objSelf.getActiveKey());
+                            }
+                            else
+                            {//小范围移动
+                                if (objSelf.joystick.distance > 5)
+                                {//5和limit之间的小范围移动
+                                    if (objSelf.joystick.angle.degree > 45 && objSelf.joystick.angle.degree <= 135)
+                                    {
+                                        objSelf.$refs.ng.first();
+                                    }
+                                    else if (objSelf.joystick.angle.degree > 135 && objSelf.joystick.angle.degree <= 225)
+                                    {
+                                        objSelf.$refs.ng.prev();
+                                    }
+                                    else if (objSelf.joystick.angle.degree > 225 && objSelf.joystick.angle.degree <= 315)
+                                    {
+                                        objSelf.$refs.ng.last();
+                                    }
+                                    else
+                                    {
+                                        objSelf.$refs.ng.next();
+                                    }
+                                }
+                                else
+                                {
+                                    objSelf.doPlay();
+                                }
+                            }
+                        }
+                    }
+                    objSelf.joystick = objSelf.getEmptyStick();
+                    break;
+            }
+            })
+            .on('move', function(evt, data) {
+                  objSelf.joystick.angle.degree = data.angle.degree;  
+                  objSelf.joystick.distance = data.distance;
+            })
+            .on('dir:up plain:up dir:left plain:left dir:down ' +
+                'plain:down dir:right plain:right',
+                function(evt, data) {
+                    // dump(evt.type);
+                    // console.log('direction');
+                    // console.log(evt);
+                  }
+               )
+            .on('pressure', function(evt, data) {
+                // console.log('pressure');
+                    // debug({
+                    //   pressure: data
+                    // });
+            });                   
+            this.shuffle();                
         },
         components: {
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
