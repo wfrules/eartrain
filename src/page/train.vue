@@ -382,7 +382,7 @@
             reveal() {
                 this.joystick.touching = false;
                 this.$refs.ng.activeIndex = 0;
-                this.$refs.ng.check(this.answers);
+                this.$refs.ng.check(this.answers, this.quest_at);
                 this.revealing = true;               
             },
             notePlay(note) {
@@ -412,10 +412,12 @@
                 });
                 this.revealing = false;
                 this.doPlay();
+                this.quest_at = moment().format('YYYY-MM-DD HH:mm:ss');
             },
         },
         data() {
             return {
+                quest_at: '',
                 joystick: this.getEmptyStick(),
                 revealing: false,
                 questions: [],

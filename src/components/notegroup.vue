@@ -7,6 +7,7 @@
 </template>
 
 <script>
+    let moment = require('moment');
     import { Flexbox, FlexboxItem } from 'vux'    
     import _common from '@/com/common';
     import note from '@/components/note';   
@@ -37,7 +38,7 @@
             },
         },                    
         methods: {
-            check(answers){
+            check(answers, quest_at){
                 let bRight = true;
                 for(let i = 0; i < this.$props.notes.length; i++)
                 {
@@ -67,7 +68,12 @@
                 let objOptions = {};
                 objOptions.url = '/api/train/submit';
                 objOptions.action = '提交答案';
-                objOptions.json = {content: arrQuestions.join(','), answer: arrAnswers.join(',')};
+                objOptions.json = {
+                    content: arrQuestions.join(','), 
+                    answer: arrAnswers.join(','),
+                    quest_at: quest_at,
+                    submit_at: moment().format('YYYY-MM-DD HH:mm:ss')
+                };
                 objOptions.func = (json) => {
                     if (bRight)
                     {

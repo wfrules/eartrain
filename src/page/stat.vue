@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import {XButton, XNumber, XHeader } from 'vux'
+    import {XButton, XNumber, XHeader,Confirm  } from 'vux'
     import {Flexbox, FlexboxItem} from 'vux'
     import * as types from "@/store/mutation-types";
     export default {
@@ -44,16 +44,19 @@
         },
         methods: {
             reset(){
-                let objOptions = {};
-                objOptions.url = '/api/train/reset';
-                objOptions.action = '清空分数';
-                objOptions.json = {};
-                objOptions.func = (json) => {
-                    this.score.right = Number(json.right);
-                    this.score.wrong = Number(json.wrong);                    
-                    alert('清空完毕');
+                if (confirm('确认清空吗?'))
+                {
+                    let objOptions = {};
+                    objOptions.url = '/api/train/reset';
+                    objOptions.action = '清空分数';
+                    objOptions.json = {};
+                    objOptions.func = (json) => {
+                        this.score.right = Number(json.right);
+                        this.score.wrong = Number(json.wrong);                    
+                        alert('清空完毕');
+                    }
+                    this.request(objOptions);
                 }
-                this.request(objOptions);
             },
             backTrain(){
                 this.$router.push('/train');
