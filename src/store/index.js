@@ -23,7 +23,8 @@ const state = {
           id: 0,//缓存当前用户id,尽量不用
           name: '',
           speed: 0,
-          utype:0
+          utype:0,
+          quest_len: 6,
       },
   grantList: {
     inited: false,//是否初始化

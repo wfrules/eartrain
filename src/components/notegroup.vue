@@ -124,11 +124,19 @@
                     objNoteData.display =  this.$props.notes[i].val;
                 }
             },
-            first(){
+            first(clear){
                 if (this.activeIndex != 0)
                 {
                     _common.playSound("/static/sound/page.mp3");
                     this.activeIndex = 0;
+                    if(clear)
+                    {
+                        for (let i = 0; i < this.$props.notes.length; i++)
+                        {
+                            let objNoteData = this.$props.notes[i];
+                            objNoteData.display =  '?';
+                        }                        
+                    }
                 }
             },
             last(){

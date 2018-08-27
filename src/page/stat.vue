@@ -3,8 +3,9 @@
         <x-header :left-options="{preventGoBack: true}" @on-click-back="backTrain">统计中心</x-header>
         <div>正确数{{score.right}}</div>
         <div>错误数{{score.wrong}}</div>  
+        <div>连击数{{score.combo}}</div>
         <div>正确率{{rate}}%</div>  
-        <x-button @click.native="reset">清空</x-button>      
+        <x-button type="warn" @click.native="reset">清空</x-button>      
     </div>
 </template>
 
@@ -28,6 +29,7 @@
                 score: {
                     right: 0,
                     wrong: 0,
+                    combo: 0,
                 },
             }
         },
@@ -39,6 +41,7 @@
                 objOptions.func = (json) => {
                     this.score.right = Number(json.right);
                     this.score.wrong = Number(json.wrong);
+                    this.score.combo = Number(json.combo);
                 }
                 this.request(objOptions);
         },

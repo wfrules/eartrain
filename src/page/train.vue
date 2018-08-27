@@ -9,14 +9,18 @@
         <!-- <keyboard :keys="pool" v-if="!revealing"  @click="touchEnd"></keyboard> -->
         <flexbox>
             <flexbox-item>
-            <svg class="icon" aria-hidden="true" @click="toSetting" v-if="$store.state.token != ''">
-                <use xlink:href="#icon-gerenzhongxin"></use>
-            </svg>
+                <x-button type="warn" @click.native="toSetting">
+                    <svg class="icon" aria-hidden="true"  v-if="$store.state.token != ''">
+                        <use xlink:href="#icon-gerenzhongxin"></use>
+                    </svg>
+                </x-button>
             </flexbox-item>
         <flexbox-item>
-            <svg class="icon" aria-hidden="true" @click="toStat" v-if="$store.state.token != ''">
-                <use xlink:href="#icon-chengjizhongxin"></use>
-            </svg>   
+            <x-button type="warn" @click.native="toStat">
+                <svg class="icon" aria-hidden="true"  v-if="$store.state.token != ''">
+                    <use xlink:href="#icon-chengjizhongxin"></use>
+                </svg> 
+            </x-button>      
         </flexbox-item>
         </flexbox>     
         <flexbox v-if="false">
@@ -185,7 +189,7 @@
                                 {//5和limit之间的小范围移动
                                     if (objSelf.joystick.angle.degree > 45 && objSelf.joystick.angle.degree <= 135)
                                     {
-                                        objSelf.$refs.ng.first();
+                                        objSelf.$refs.ng.first(true);
                                     }
                                     else if (objSelf.joystick.angle.degree > 135 && objSelf.joystick.angle.degree <= 225)
                                     {
@@ -409,7 +413,7 @@
                 let objOptions = {};
                 objOptions.url = '/api/train/getquest';
                 objOptions.action = '获取题目';
-                objOptions.json = {len: 6};
+                objOptions.json = {};
                 objOptions.func = (json) => {                
                     this.joystick.touching = false;
                     let arrQuests = [];                
