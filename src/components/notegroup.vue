@@ -38,7 +38,7 @@
             },
         },                    
         methods: {
-            check(answers, quest_at){
+            check(answers, quest_at, played){
                 let bRight = true;
                 for(let i = 0; i < this.$props.notes.length; i++)
                 {
@@ -72,7 +72,8 @@
                     content: arrQuestions.join(','), 
                     answer: arrAnswers.join(','),
                     quest_at: quest_at,
-                    submit_at: moment().format('YYYY-MM-DD HH:mm:ss')
+                    submit_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    played: played,
                 };
                 objOptions.func = (json) => {
                     if (bRight)

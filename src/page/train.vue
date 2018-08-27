@@ -1,5 +1,5 @@
 <template>
-    <div>        
+    <div>      
         <div class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">
             <div v-if="!revealing" class="circle" :style="getHintStyle(poolHint, index)" v-for="(poolHint, index) in pool">{{poolHint.caption}}</div>
             <!--{{joystick.key.caption}}-->
@@ -363,6 +363,10 @@
                 this.play(this.answers);
             },
             play(notes) {
+                if (!this.revealing)
+                {
+                    this.played++;
+                }
                 let dBpm  = this.$store.state.profile.speed;
                 if(!dBpm)
                 {
@@ -382,7 +386,7 @@
             reveal() {
                 this.joystick.touching = false;
                 this.$refs.ng.activeIndex = 0;
-                this.$refs.ng.check(this.answers, this.quest_at);
+                this.$refs.ng.check(this.answers, this.quest_at, this.played);
                 this.revealing = true;               
             },
             notePlay(note) {
@@ -411,12 +415,14 @@
                     }
                 });
                 this.revealing = false;
+                this.played = 0;
                 this.doPlay();
                 this.quest_at = moment().format('YYYY-MM-DD HH:mm:ss');
             },
         },
         data() {
             return {
+                played: 0,
                 quest_at: '',
                 joystick: this.getEmptyStick(),
                 revealing: false,
