@@ -228,8 +228,20 @@
                     // debug({
                     //   pressure: data
                     // });
-            });                   
-            this.shuffle();                
+            });                                           
+
+            let objOptions = {};
+            objOptions.url = '/api/train/getpool';
+            objOptions.action = '获取题库';
+            objOptions.json = {
+                
+            };
+            objOptions.func = (json) => {                
+               this.pool = json.pool;
+               this.shuffle(); 
+            }
+            this.request(objOptions);
+
         },
         components: {
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
@@ -393,31 +405,38 @@
                 console.log(note);
             },
             shuffle() {
-                this.joystick.touching = false;
-                let arrQuests = [];                
-                for (let i = 0; i < 6; i++) {
-                    let idx = _common.randomNumBoth(0, 7);
-                    let iNote = _common.keyToNote(this.pool[idx].code);
-                    let objNote = _common.getTitleFromVal(iNote, _common.sign.Minus);
-                    objNote.display = '?';
-                    objNote.active = i == 0;
-                    objNote.state = 0;
-                    arrQuests.push(objNote);
-                }
-                this.questions = arrQuests;
-                this.answers = this.questions.map(quest => {
-                    return {
-                        val: quest.val,
-                        times: quest.times,
-                        sign: quest.sign,
-                        display: quest.val,
-                        active: false
+
+                let objOptions = {};
+                objOptions.url = '/api/train/getquest';
+                objOptions.action = '获取题目';
+                objOptions.json = {len: 6};
+                objOptions.func = (json) => {                
+                    this.joystick.touching = false;
+                    let arrQuests = [];                
+                    for (let i = 0; i < json.quest.length; i++) {
+                        let iNote = _common.keyToNote(json.quest[i].code);
+                        let objNote = _common.getTitleFromVal(iNote, _common.sign.Minus);
+                        objNote.display = '?';
+                        objNote.active = i == 0;
+                        objNote.state = 0;
+                        arrQuests.push(objNote);
                     }
-                });
-                this.revealing = false;
-                this.played = 0;
-                this.doPlay();
-                this.quest_at = moment().format('YYYY-MM-DD HH:mm:ss');
+                    this.questions = arrQuests;
+                    this.answers = this.questions.map(quest => {
+                        return {
+                            val: quest.val,
+                            times: quest.times,
+                            sign: quest.sign,
+                            display: quest.val,
+                            active: false
+                        }
+                    });
+                    this.revealing = false;
+                    this.played = 0;
+                    this.doPlay();
+                    this.quest_at = moment().format('YYYY-MM-DD HH:mm:ss');
+                }
+                this.request(objOptions);                
             },
         },
         data() {
@@ -433,18 +452,7 @@
                 timerCheck: 0,
                 showStandard: false,
                 questResult: false,
-
-                pool: [
-                    {caption: 1, code: 'C3'},
-                    {caption: 2, code: 'D3'},
-                    {caption: 3, code: 'E3'},
-                    {caption: 4, code: 'F3'},
-                    {caption: 5, code: 'G3'},
-                    {caption: 6, code: 'A3'},
-                    {caption: 7, code: 'B3'},
-                    {caption: 'i', code: 'C4'},
-                ],
-
+                pool: [],
                 keys: [
                     {caption: 1, code: 1},
                     {caption: 2, code: 2},
