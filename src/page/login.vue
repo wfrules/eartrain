@@ -1,8 +1,16 @@
 <template>
     <div>
         <div>
-            <input type="text" place="用户名" v-model="uname" />
-            <input type="password" place="密码" v-model="pass" />
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-gerenzhongxin"></use>
+            </svg>
+            <input type="text" placeholder="用户名" v-model="uname" />
+        </div>
+        <div>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-icon--"></use>
+          </svg>
+          <input type="password" placeholder="密码" v-model="pass" />
         </div>
         <div>
             <button @click="register">注册</button>

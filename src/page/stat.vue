@@ -1,26 +1,27 @@
 <template>
     <div>
         <x-header :left-options="{preventGoBack: true}" @on-click-back="backTrain">统计中心</x-header>
-        <div>正确数{{score.right}}</div>
-        <div>错误数{{score.wrong}}</div>  
-        <div>连击数{{score.combo}}</div>
-        <div>正确率{{rate}}%</div>
-        <div>平均播放次数{{score.avg_played}}</div>
-      <div v-for="apool in score.pool_result">{{apool.caption}}
-          <span>正确{{apool.right}}</span><span>错误{{apool.wrong}}</span>
-      </div>
+        <simpleField caption="正确连击数" :val="score.combo"></simpleField>
+        <simpleField caption="平均播放次数" :val="score.avg_played"></simpleField>
+        <simpleField caption="平均每题耗时(s)" :val="score.avg_duration"></simpleField>
+        <indicator caption="总计:" :right="score.right" :wrong="score.wrong"></indicator>
+        <indicator  v-for="apool in score.pool_result" :caption="apool.caption"
+                    :right="apool.right" :wrong="apool.wrong" :key="apool.caption"></indicator>
       <x-button type="warn" @click.native="reset">清空</x-button>
     </div>
 </template>
 
 <script>
+    import _common from '@/com/common';
     import {XButton, XNumber, XHeader,Confirm  } from 'vux'
     import {Flexbox, FlexboxItem} from 'vux'
     import * as types from "@/store/mutation-types";
+    import indicator from '@/components/indicator';
+    import simpleField from '@/components/simplefield';
     export default {
         name: "stat",
         components: {
-            XButton, Flexbox, FlexboxItem, XNumber, XHeader
+            XButton, Flexbox, FlexboxItem, XNumber, XHeader,indicator,simpleField
         },
         computed: {
             rate(){
@@ -35,6 +36,7 @@
                     wrong: '',
                     combo: '',
                     avg_played: '',
+                    avg_duration: '',
                     pool_result: [],
                 },
             }
@@ -55,7 +57,17 @@
               this.score.wrong = Number(json.wrong);
               this.score.combo = Number(json.combo);
               this.score.avg_played = Number(json.avg_played);
-              this.score.pool_result = json.pool_result;
+              this.score.avg_duration = Number(json.avg_duration);
+              this.score.pool_result = json.pool_result.sort((a,b)=>{
+                let aTotal = _common.getRate(a.right, a.wrong);
+                let bTotal = _common.getRate(b.right, b.wrong);
+                let bRet = aTotal<bTotal;
+                if (aTotal == bTotal)
+                {
+                  bRet = a.right < b.right;
+                }
+                return bRet;
+              });
             },
             reset(){
                 if (confirm('确认清空吗?'))
