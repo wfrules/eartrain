@@ -1,11 +1,29 @@
 <template>
-    <div v-if="$store.state.libLoaded">
+    <div>      
+        <div class="joystick_area" ref="joystick" @dblclick="doSubmit" :style="getJoyStyle()">
+            <div v-if="!revealing" class="circle" :style="getHintStyle(poolHint, index)" v-for="(poolHint, index) in pool">{{poolHint.caption}}</div>
+            <!--{{joystick.key.caption}}-->
+        </div>
         <notegroup :notes.sync="questions" ref="ng"></notegroup>
         <notegroup v-if="revealing" :notes.sync="answers" :can_active="false"></notegroup>
-        <icon v-if="revealing && questResult" type="success" is-msg></icon>
-        <icon v-if="revealing && !questResult" type="warn" is-msg></icon>
-        <keyboard :keys="pool" v-if="!revealing"  @click="keyPress"></keyboard>
+        <!-- <keyboard :keys="pool" v-if="!revealing"  @click="touchEnd"></keyboard> -->
         <flexbox>
+            <flexbox-item>
+                <x-button type="warn" @click.native="toSetting">
+                    <svg class="icon" aria-hidden="true"  v-if="$store.state.token != ''">
+                        <use xlink:href="#icon-gerenzhongxin"></use>
+                    </svg>
+                </x-button>
+            </flexbox-item>
+        <flexbox-item>
+            <x-button type="warn" @click.native="toStat">
+                <svg class="icon" aria-hidden="true"  v-if="$store.state.token != ''">
+                    <use xlink:href="#icon-chengjizhongxin"></use>
+                </svg> 
+            </x-button>      
+        </flexbox-item>
+        </flexbox>     
+        <flexbox v-if="false">
             <flexbox-item><x-button type="warn" @click.native='doPlay'>
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-bofang"></use>
@@ -27,7 +45,7 @@
                 </svg>
             </x-button></flexbox-item>
         </flexbox>
-        <notegroup v-if="showStandard" :notes.sync="standards"></notegroup>
+   <!--      <notegroup v-if="showStandard" :notes.sync="standards"></notegroup> -->
     </div>
 </template>
 
@@ -40,7 +58,7 @@
     import _common from '@/com/common';
     import notegroup from '@/components/notegroup';
     import keyboard from '@/components/keyboard';
-
+    const TouchLimit = 50;//圆周半径
     export default {
         name: 'Train',
         computed: {           
@@ -58,12 +76,12 @@
             }
         },
         watch: {
-            '$store.state.libLoaded': function(newVal, oldVal){
-              if(newVal)
-              {
-                this.shuffle();
-              }
-            },
+            // '$store.state.libLoaded': function(newVal, oldVal){
+            //   if(newVal)
+            //   {
+                 
+            //   }
+            // },
             questions: {
                 handler: function (questions, oldVal) {
                     let bSuccess = true;
@@ -102,19 +120,247 @@
 
             (function poll() {
                 clearTimeout(objSelf.timerCheck);
-                objSelf.now = moment().format('YYYY-MM-DD hh:mm:ss');
+                objSelf.now = moment().format('YYYY-MM-DD HH:mm:ss');
                 objSelf.timerCheck = setTimeout(poll, 1000);
-            })();            
+
+                if (objSelf.joystick.touching && objSelf.joystick.distance < TouchLimit)
+                {
+                    if (objSelf.revealing)
+                    {//揭示状态
+                        {//小范围移动
+                            let iDiff =  moment(objSelf.now).diff(objSelf.joystick.touchBeginAt, 'seconds');
+                            if (iDiff >= 1){
+                                objSelf.shuffle();
+                            }
+                        }
+                    }
+                    else {//考核状态
+                        {//小范围移动
+                            if (objSelf.canDoReveal())
+                            {
+                                objSelf.reveal();
+                            }
+                        }
+                    }
+                }
+            })();                        
+        },
+        mounted(){                  
+            let objSelf = this;
+            var options = {
+                zone: this.$refs.joystick,
+                color: 'red'
+            };            
+            var objJoystick = require('nipplejs').create(options);
+            objJoystick.on('start end', function(evt, data) {
+            // dump(evt.type);
+            // debug(data);
+            switch(evt.type)
+            {
+                case 'start':
+                    objSelf.joystick.touching = true;
+                    objSelf.joystick.position = data.position;
+                    objSelf.joystick.touchBeginAt = moment();
+
+                    break;
+                case 'end':
+                    if (objSelf.joystick.touching)
+                    {
+                        if (objSelf.revealing)
+                        {//揭示状态
+                            if (objSelf.joystick.distance >= TouchLimit) {
+                                if (objSelf.joystick.angle.degree <= 180)
+                                {
+                                    objSelf.playSheet();
+                                }
+                                else
+                                {
+                                    objSelf.doPlay();
+                                }
+                            }
+                        }
+                        else {//考核状态
+                            if (objSelf.joystick.distance >= TouchLimit) {
+                                objSelf.$refs.ng.change(objSelf.getActiveKey());
+                            }
+                            else
+                            {//小范围移动
+                                if (objSelf.joystick.distance > 5)
+                                {//5和limit之间的小范围移动
+                                    if (objSelf.joystick.angle.degree > 45 && objSelf.joystick.angle.degree <= 135)
+                                    {
+                                        objSelf.$refs.ng.first(true);
+                                    }
+                                    else if (objSelf.joystick.angle.degree > 135 && objSelf.joystick.angle.degree <= 225)
+                                    {
+                                        objSelf.$refs.ng.prev();
+                                    }
+                                    else if (objSelf.joystick.angle.degree > 225 && objSelf.joystick.angle.degree <= 315)
+                                    {
+                                        objSelf.$refs.ng.last();
+                                    }
+                                    else
+                                    {
+                                        objSelf.$refs.ng.next();
+                                    }
+                                }
+                                else
+                                {
+                                    objSelf.doPlay();
+                                }
+                            }
+                        }
+                    }
+                    objSelf.joystick = objSelf.getEmptyStick();
+                    break;
+            }
+            })
+            .on('move', function(evt, data) {
+                  objSelf.joystick.angle.degree = data.angle.degree;  
+                  objSelf.joystick.distance = data.distance;
+            })
+            .on('dir:up plain:up dir:left plain:left dir:down ' +
+                'plain:down dir:right plain:right',
+                function(evt, data) {
+                    // dump(evt.type);
+                    // console.log('direction');
+                    // console.log(evt);
+                  }
+               )
+            .on('pressure', function(evt, data) {
+                // console.log('pressure');
+                    // debug({
+                    //   pressure: data
+                    // });
+            });                                           
+
+            let objOptions = {};
+            objOptions.url = '/api/train/getpool';
+            objOptions.action = '获取题库';
+            objOptions.json = {
+                
+            };
+            objOptions.func = (json) => {                
+               this.pool = json.pool;
+               this.shuffle(); 
+            }
+            this.request(objOptions);
+
         },
         components: {
             notegroup, Icon, XButton, keyboard, Flexbox, FlexboxItem 
         },
         methods: {
-            keyPress(keyObj){
-                this.$refs.ng.change(keyObj);
-            },           
+            toSetting(){
+                this.$router.push('/setting');
+            },
+            toStat(){
+                this.$router.push('/stat');
+            },
+            getActiveKey(){
+                let iAngle = this.joystick.angle.degree;
+                let iRet = -1;
+                for(let i = 0; i < 8; i++)
+                {
+                  let iBegin = 22.5 + i*45;
+                  let iEnd = 22.5 + (i+1)*45;
+                  if(((iAngle >= iBegin) && (iAngle < iEnd))
+                      ||
+                      (((iAngle + 360) >= iBegin) && ((iAngle + 360) < iEnd))
+                  )
+                  {
+                      iRet = i;
+                      break;
+                  }
+                }
+                let arrStand = [ 7, 8, 1, 2, 3, 4, 5, 6];
+                let iNote = arrStand[iRet];
+                return this.pool[iNote - 1];
+            },
+            canDoReveal(){
+                let bRet = false;
+                if (this.showReveal && (this.joystick.distance < TouchLimit) && (this.joystick.touching))
+                {
+                    let iDiff =  moment(this.now).diff(this.joystick.touchBeginAt, 'seconds');
+                    bRet = (iDiff >= 1);
+                }
+                return bRet;
+            },
+            getEmptyStick(){
+                return {
+                    touching: false,
+                    distance: 0,
+                    position: {x: 0, y: 0},
+                    touchBeginAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    touchEndAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    angle: {degree: 0},
+                };
+            },
+            getPosition(x, y, radius, index){
+                // {caption: 1, code: 'C3'},
+                // {caption: 2, code: 'D3'},
+                // {caption: 3, code: 'E3'},
+                // {caption: 4, code: 'F3'},
+                // {caption: 5, code: 'G3'},
+                // {caption: 6, code: 'A3'},
+                // {caption: 7, code: 'B3'},
+                // {caption: 'i', code: 'C4'},
+                let iDistance = 100;
+                let arrPos = [
+                    {left: x - iDistance - (radius/2), top: y - iDistance - (radius/2)},//1
+                    {left: x - iDistance - (radius/2), top: y - (radius/2)},//2
+                    {left: x - iDistance - (radius/2), top: y + iDistance - (radius/2)},//3
+                    {left: x - (radius/2), top: y + iDistance - (radius/2)},//4
+                    {left: x + iDistance - (radius/2), top: y + iDistance - (radius/2)},//5
+                    {left: x + iDistance - (radius/2), top:  y - (radius/2)},//6
+                    {left: x + iDistance - (radius/2), top: y - iDistance - (radius/2)},//7
+                    {left: x - (radius/2), top: y - iDistance - (radius/2)}//8
+                ];
+                return arrPos[index];
+            },
+            getHintStyle(aHint, index){
+                let objStyle = {};
+                if (this.joystick.touching)
+                {
+                    objStyle.display = "block";
+                    let iWidth = document.body.clientWidth;
+                    let iRadius = iWidth * 0.15;
+                    objStyle.width = iRadius + 'px';
+                    objStyle.height = iRadius + 'px';
+                    let objPosition = this.getPosition(this.joystick.position.x, this.joystick.position.y, iRadius,  index);
+                    objStyle.left = objPosition.left + 'px';
+                    objStyle.top = objPosition.top + 'px';
+                    objStyle['font-size'] = '20px';
+                    if ((aHint.caption == this.getActiveKey().caption) && (this.joystick.distance >= TouchLimit))
+                    {
+                        objStyle['background-color'] = 'yellow';
+                    }
+                    if (this.canDoReveal())
+                    {
+                        objStyle['background-color'] = 'green';
+                    }
+
+                }
+                else
+                {
+                    objStyle.display = "none";
+                }
+
+                return objStyle;
+            },
+            getJoyStyle(){
+              let iWidth = document.body.clientWidth;
+              let objStyle = {
+                  width: iWidth + 'px',
+                  height: iWidth + 'px',
+              };
+              return objStyle;
+            },
+            doSubmit(){
+              alert('双击');
+            },         
             stop() {
-                this.play_end_at =  moment().format('YYYY-MM-DD hh:mm:ss');
+                this.play_end_at =  moment().format('YYYY-MM-DD HH:mm:ss');
                 _common.stop();
             },
             questClick(index) {
@@ -130,69 +376,87 @@
             },
             doPlay(){
                 this.stop();
-                this.play();
+                this.play(this.answers);
             },
-            play() {
-                let dRate = 0.5;
-                for (let i = 0; i < this.answers.length; i++) {
-                    _common.play(_common.getValFromParams(this.answers[i]), {delay: i * dRate});
+            play(notes) {
+                if (!this.revealing)
+                {
+                    this.played++;
                 }
-                let dDelay = this.answers.length * dRate;
-                this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD hh:mm:ss');
+                let dBpm  = this.$store.state.profile.speed;
+                if(!dBpm)
+                {
+                    throw new Error('速度不能为0');
+                }
+                let dRate = 60 / dBpm;
+                for (let i = 0; i < notes.length; i++) {
+                    _common.play(_common.getValFromParams(notes[i]), {delay: i * dRate});
+                }
+                let dDelay = notes.length * dRate;
+                this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD HH:mm:ss');
+            },
+            playSheet(){
+                this.stop();
+                this.play(this.questions);                               
             },
             reveal() {
+                this.joystick.touching = false;
                 this.$refs.ng.activeIndex = 0;
-                this.revealing = true;                
+                this.$refs.ng.check(this.answers, this.quest_at, this.played);
+                this.revealing = true;               
             },
             notePlay(note) {
                 console.log(note);
             },
-            shuffle() {                
-                let arrQuests = [];                
-                for (let i = 0; i < 6; i++) {
-                    let idx = _common.randomNumBoth(0, 7);
-                    let iNote = _common.keyToNote(this.pool[idx].code);
-                    let objNote = _common.getTitleFromVal(iNote, _common.sign.Minus);
-                    objNote.display = '?';
-                    objNote.active = i == 0;
-                    arrQuests.push(objNote);
-                }
-                this.questions = arrQuests;
-                this.answers = this.questions.map(quest => {
-                    return {
-                        val: quest.val,
-                        times: quest.times,
-                        sign: quest.sign,
-                        display: quest.val,
-                        active: false
+            shuffle() {
+
+                let objOptions = {};
+                objOptions.url = '/api/train/getquest';
+                objOptions.action = '获取题目';
+                objOptions.json = {};
+                objOptions.func = (json) => {                
+                    this.joystick.touching = false;
+                    let arrQuests = [];                
+                    for (let i = 0; i < json.quest.length; i++) {
+                        let iNote = _common.keyToNote(json.quest[i].code);
+                        let objNote = _common.getTitleFromVal(iNote, _common.sign.Minus);
+                        objNote.display = '?';
+                        objNote.active = i == 0;
+                        objNote.state = 0;
+                        arrQuests.push(objNote);
                     }
-                });
-                this.revealing = false;
-                this.play();
+                    this.questions = arrQuests;
+                    this.answers = this.questions.map(quest => {
+                        return {
+                            val: quest.val,
+                            times: quest.times,
+                            sign: quest.sign,
+                            display: quest.val,
+                            active: false
+                        }
+                    });
+                    this.revealing = false;
+                    this.played = 0;
+                    this.doPlay();
+                    this.quest_at = moment().format('YYYY-MM-DD HH:mm:ss');
+                }
+                this.request(objOptions);                
             },
         },
         data() {
             return {
+                played: 0,
+                quest_at: '',
+                joystick: this.getEmptyStick(),
                 revealing: false,
                 questions: [],
                 answers: [],
-                play_end_at: moment().format('YYYY-MM-DD hh:mm:ss'),
-                now: moment().format('YYYY-MM-DD hh:mm:ss'),
+                play_end_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+                now: moment().format('YYYY-MM-DD HH:mm:ss'),
                 timerCheck: 0,
                 showStandard: false,
                 questResult: false,
-
-                pool: [
-                    {caption: 1, code: 'C3'},
-                    {caption: 2, code: 'D3'},
-                    {caption: 3, code: 'E3'},
-                    {caption: 4, code: 'F3'},
-                    {caption: 5, code: 'G3'},
-                    {caption: 6, code: 'A3'},
-                    {caption: 7, code: 'B3'},
-                    {caption: 'i', code: 'C4'},
-                ],
-
+                pool: [],
                 keys: [
                     {caption: 1, code: 1},
                     {caption: 2, code: 2},
@@ -216,5 +480,21 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+    .joystick_area {
+        background-color: #b2b2b2;
+        font-size: 200px;
+        position: relative;
+        text-align: center;
+    }
+    .circle {;
+        position: absolute;
+        background-color:#cccccc;
+        border-radius: 50%;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
 </style>

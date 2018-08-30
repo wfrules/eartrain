@@ -1,0 +1,6 @@
+{
+  "protocol": "http",
+  "apiDomain": "a local domain",
+  "apiDomain_remote": "a remote domain",
+  "apiDomain_local": "a local domain"
+}

@@ -22,6 +22,16 @@
                     }
                 });
             };
+        },
+        methods: {
+
+        },
+        components: {
+        },
+        data(){
+            return {
+
+            }
         }
     }
 </script>
@@ -33,7 +43,6 @@
         -moz-osx-font-smoothing: grayscale;
         text-align: center;
         color: #2c3e50;
-        margin-top: 60px;
     }
     .icon {
         /* 通过设置 font-size 来改变图标大小 */

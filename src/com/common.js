@@ -139,6 +139,14 @@ let common = {
 // MIDI.keyToNote = object; // A0 => 21
 // MIDI.noteToKey = object; // 21 => A0
 
+    },
+    playSound(src){        
+        var audio = new Audio(src);
+        audio.play();
+    },
+    getRate(right, wrong){//统计百分比
+      let dTotal = Number(right) + Number(wrong);
+      return (dTotal > 0)?(right*100/dTotal):0;
     }
 }
 export default common;

@@ -7,6 +7,7 @@
 </template>
 
 <script>
+    let moment = require('moment');
     import { Flexbox, FlexboxItem } from 'vux'    
     import _common from '@/com/common';
     import note from '@/components/note';   
@@ -37,6 +38,55 @@
             },
         },                    
         methods: {
+            check(answers, quest_at, played){
+                let bRight = true;
+                for(let i = 0; i < this.$props.notes.length; i++)
+                {
+                    let iAnswered = _common.getValFromParams(this.$props.notes[i]);
+                    let iCorret = _common.getValFromParams(answers[i]); 
+                    if (iAnswered == iCorret)     
+                    {
+                        this.$props.notes[i].state = 1;
+                    }              
+                    else 
+                    {
+                        this.$props.notes[i].state = 2;
+                        bRight = false;
+                    }
+                }
+
+                //
+                let arrQuestions = this.$props.notes.map(note=>{
+                    return _common.getValFromParams(note);
+                });
+
+                let arrAnswers = answers.map(note=>{
+                    return _common.getValFromParams(note);
+                });
+
+
+                let objOptions = {};
+                objOptions.url = '/api/train/submit';
+                objOptions.action = '提交答案';
+                objOptions.json = {
+                    content: arrQuestions.join(','), 
+                    answer: arrAnswers.join(','),
+                    quest_at: quest_at,
+                    submit_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    played: played,
+                };
+                objOptions.func = (json) => {
+                    if (bRight)
+                    {
+                        _common.playSound("/static/sound/right.mp3");
+                    }
+                    else
+                    {
+                        _common.playSound("/static/sound/wrong.mp3");
+                    }
+                }
+                this.request(objOptions);
+            },
             toHidding(){//定位到下一个隐藏按钮
                 let bFound= false;
                 for (let i = this.activeIndex; i < this.$props.notes.length; i++)
@@ -72,15 +122,40 @@
                 {
                     let objNoteData = this.$props.notes[i];
                     objNoteData.display =  this.$props.notes[i].val;
-                    
-                    // this.$refs['note'+ i].reveal();
+                }
+            },
+            first(clear){
+                if (this.activeIndex != 0)
+                {
+                    _common.playSound("/static/sound/page.mp3");
+                    this.activeIndex = 0;
+                    if(clear)
+                    {
+                        for (let i = 0; i < this.$props.notes.length; i++)
+                        {
+                            let objNoteData = this.$props.notes[i];
+                            objNoteData.display =  '?';
+                        }                        
+                    }
+                }
+            },
+            last(){
+                if (this.activeIndex != this.$props.notes.length - 1) {
+                    _common.playSound("/static/sound/page.mp3");
+                    this.activeIndex = this.$props.notes.length - 1;
                 }
             },
             prev(){
-                this.activeIndex = Math.max(this.activeIndex-1, 0);
+                if (this.activeIndex != 0) {
+                    _common.playSound("/static/sound/page.mp3");
+                    this.activeIndex = Math.max(this.activeIndex-1, 0);
+                }
             },
             next(){
-                this.activeIndex = Math.min(this.activeIndex + 1, this.$props.notes.length - 1);
+                if (this.activeIndex != this.$props.notes.length - 1) {
+                    _common.playSound("/static/sound/page.mp3");
+                    this.activeIndex = Math.min(this.activeIndex + 1, this.$props.notes.length - 1);
+                };
             },
             reset(){
                 this.$props.notes[this.activeIndex].sign = _common.sign.Normal;
@@ -139,6 +214,7 @@
                         this.toHidding();
                         break;
                 }
+                _common.playSound("/static/sound/keypress.mp3");
             },
            noteClick(index){
                 this.activeIndex = index;
