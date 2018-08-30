@@ -6,6 +6,8 @@
 后台功能持续完善中....
 
 
+[demo请戳这里](http://eartrain.mylo2o.net "请在移动端观看")  
+
 > ear train
 
 ## Build Setup
