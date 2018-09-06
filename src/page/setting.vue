@@ -1,6 +1,6 @@
 <template>
     <div>
-        <x-header>个人中心</x-header>
+        <!--<x-header>个人中心</x-header>-->
         <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-gerenzhongxin"></use>
         </svg>

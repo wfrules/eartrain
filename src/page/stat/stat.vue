@@ -1,6 +1,6 @@
 <template>
     <div>
-        <x-header :left-options="{preventGoBack: true}" @on-click-back="backTrain">统计中心</x-header>
+        <!--<x-header :left-options="{preventGoBack: true}" @on-click-back="backTrain">统计中心</x-header>-->
         <!--<input type="radio" value=0 name="tabIndex" v-model="tabIndex"/>-->
         <!--<input type="radio" value=1 name="tabIndex" v-model="tabIndex"/>-->
         <statDetail v-if="tabIndex==0" :today="false" caption="全部"></statDetail>
