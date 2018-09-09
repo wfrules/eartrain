@@ -7,7 +7,7 @@
         <v-tooltip show-value-in-legend />
       </v-chart>
       <v-chart ref="line"  :data="lineData" prevent-default>
-        <v-scale x :tick-count="3" />
+        <v-scale x :tick-count="5" />
         <v-scale y field="value" :min="0"  :formatter="percentFormatter" />
         <v-tooltip :show-item-marker="false" show-x-value />
         <v-line />

@@ -14,12 +14,14 @@ export default new Router({
     {
       path: '/',
       name: '/',
-      component: Train
+      component: Train,
+      meta: {title: '训练中心'},
     },
     {
       path: '/train',
       name: 'Train',
-      component: Train
+      component: Train,
+      meta: {title: '训练中心'},
     },
     {
       path: '/setting',
