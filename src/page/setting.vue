@@ -72,22 +72,27 @@
                 var reader = new FileReader();
                 reader.onload = function(e){
                     var partsData = MidiConvert.parse(e.target.result);
-                    console.log(partsData);//@wftmp
-                    let arrNotes = partsData.tracks[1].notes;
-
+                    let objTrack = partsData.tracks[0];
+                    let arrNotes = objTrack.notes;
                     let dRate = 60 / partsData.header.bpm;
-                    for (let i = 0; i < arrNotes.length; i++) {
-                        _common.play(arrNotes[i].midi, {
-                            delay: i * dRate
-                        });
+                    let arrPlay = [];
+                    for(let i = 0; i < Number(objTrack.duration); i++)
+                    {
+                       arrNotes.forEach(noteItem=>{
+                         if ((noteItem.time >= i) && (noteItem.time < i+1))
+                         {
+                           arrPlay.push({
+                             note: noteItem.midi,
+                             delay: noteItem.time,
+                           });
+                         }
+                       });
                     }
-
-
-                    arrNotes.forEach(noteItem=>{
-                        // console.log(noteItem);
-                        _common.play(noteItem.midi,{delay: noteItem.duration});
+                    // console.dir(arrNotes);
+                    // console.dir(arrPlay);
+                    arrPlay.forEach(noteItem=>{
+                      _common.play(noteItem.note,{delay: noteItem.delay});
                     });
-
                 };
                 reader.readAsBinaryString(file);
             },
