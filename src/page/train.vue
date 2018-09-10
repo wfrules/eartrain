@@ -385,7 +385,7 @@
         }
         let dRate = 60 / dBpm;
         for (let i = 0; i < notes.length; i++) {
-          _common.play(_common.getValFromParams(notes[i]), {delay: i * dRate});
+          _common.play(_common.getValFromParams(notes[i]), {delay: i * dRate, instrument: this.$store.state.profile.instrument});
         }
         let dDelay = notes.length * dRate;
         this.play_end_at = moment().add(dDelay, 's').format('YYYY-MM-DD HH:mm:ss');

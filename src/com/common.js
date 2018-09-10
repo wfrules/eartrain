@@ -129,7 +129,7 @@ let common = {
         var velocity = 127; // how hard the note hits
         // play the note
         MIDI.setVolume(0, 127);
-        MIDI.programChange(0, 24);
+        MIDI.programChange(0, params.instrument || 0);
         let objNote = MIDI.noteOn(0, noteVal, velocity, delay);
         MIDI.noteOff(0, noteVal, delay + 0.75);
         return objNote;

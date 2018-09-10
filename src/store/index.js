@@ -25,6 +25,7 @@ const state = {
           speed: 0,
           utype:0,
           quest_len: 6,
+          instrument: 0
       },
   grantList: {
     inited: false,//是否初始化

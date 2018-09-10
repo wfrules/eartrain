@@ -113,7 +113,7 @@
                 // this.params.active = !this.params.active;    
                 if (this.params.display != '?')
                 {
-                  _common.play(this.actualVal,{});
+                  _common.play(this.actualVal,{instrument: this.$store.state.profile.instrument});
                 }                
                 this.$emit('click');
             },

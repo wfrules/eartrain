@@ -63,8 +63,6 @@
                 let arrAnswers = answers.map(note=>{
                     return _common.getValFromParams(note);
                 });
-
-
                 let objOptions = {};
                 objOptions.url = '/api/train/submit';
                 objOptions.action = '提交答案';
@@ -74,6 +72,7 @@
                     quest_at: quest_at,
                     submit_at: moment().format('YYYY-MM-DD HH:mm:ss'),
                     played: played,
+                    instrument: this.$store.state.profile.instrument
                 };
                 objOptions.func = (json) => {
                     if (bRight)
