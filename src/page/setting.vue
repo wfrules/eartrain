@@ -1,3 +1,4 @@
+<script src="../com/MidiConvert.js"></script>
 <template>
     <div>
         <!--<x-header>个人中心</x-header>-->
@@ -42,6 +43,7 @@
     import {XButton, XNumber, XHeader } from 'vux'
     import {Flexbox, FlexboxItem} from 'vux'
     import * as types from "@/store/mutation-types";
+    import _common from '@/com/common';
     export default {
         name: "setting",
         components: {
@@ -61,9 +63,33 @@
                     var files = e.target.files;
                     if (files.length > 0){
                         var file = files[0];
-                        console.log(file);
+                        this.parseFile(file);
                     }
                 }
+            },
+            parseFile(file){
+                //read the file
+                var reader = new FileReader();
+                reader.onload = function(e){
+                    var partsData = MidiConvert.parse(e.target.result);
+                    console.log(partsData);//@wftmp
+                    let arrNotes = partsData.tracks[1].notes;
+
+                    let dRate = 60 / partsData.header.bpm;
+                    for (let i = 0; i < arrNotes.length; i++) {
+                        _common.play(arrNotes[i].midi, {
+                            delay: i * dRate
+                        });
+                    }
+
+
+                    arrNotes.forEach(noteItem=>{
+                        // console.log(noteItem);
+                        _common.play(noteItem.midi,{delay: noteItem.duration});
+                    });
+
+                };
+                reader.readAsBinaryString(file);
             },
             toggleInstrument(instrument){
                 this.instrument = instrument;

@@ -126,7 +126,7 @@ let common = {
     },
     play(noteVal, params) {
         var delay = params.delay || 0; // play one note every quarter second
-        var velocity = 127; // how hard the note hits
+        var velocity = params.velocity || 127; // how hard the note hits
         // play the note
         MIDI.setVolume(0, 127);
         MIDI.programChange(0, params.instrument || 0);
