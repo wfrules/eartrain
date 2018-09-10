@@ -63,7 +63,7 @@
                 </x-button>
             </flexbox-item>
         </flexbox>
-        <div>播放次数:<span class="detailNum">{{played}}</span>耗时:<span class="detailNum">{{elapse}}</span>秒</div>
+        <div  v-if="!revealing" >播放次数:<span class="detailNum">{{played}}</span>耗时:<span class="detailNum">{{elapse}}</span>秒</div>
         <!--      <notegroup v-if="showStandard" :notes.sync="standards"></notegroup> -->
     </div>
 </template>

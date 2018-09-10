@@ -34,6 +34,7 @@
                 </x-button>
             </flexbox-item>
         </flexbox>
+        <input type="file" ref="inputFile" @change="uploadMidi" accept="audio/midi"/>
     </div>
 </template>
 
@@ -54,6 +55,16 @@
             }
         },
         methods: {
+            uploadMidi(e){
+                if (window.FileReader) {
+                    let inputFile = this.$refs.inputFile;
+                    var files = e.target.files;
+                    if (files.length > 0){
+                        var file = files[0];
+                        console.log(file);
+                    }
+                }
+            },
             toggleInstrument(instrument){
                 this.instrument = instrument;
             },
