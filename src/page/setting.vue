@@ -17,7 +17,15 @@
             </flexbox-item>
             <flexbox-item>
                 <x-number title="问题长度" v-model="quest_len"></x-number>
-            </flexbox-item>            
+            </flexbox-item>
+            <flexbox-item>
+                <svg :class="getInstrumentClass(0)" aria-hidden="true" @click="toggleInstrument(0)">
+                    <use xlink:href="#icon-gangqin-yuanwenjian"></use>
+                </svg>
+                <svg :class="getInstrumentClass(24)" aria-hidden="true" @click="toggleInstrument(24)">
+                    <use xlink:href="#icon-mujita"></use>
+                </svg>
+            </flexbox-item>
             <flexbox-item>
                 <x-button type="warn"  @click.native="doSave">
                     <svg class="icon" aria-hidden="true" >
@@ -42,21 +50,34 @@
             return {
                 speed: this.$store.state.profile.speed,
                 quest_len: this.$store.state.profile.quest_len,
+                instrument: this.$store.state.profile.instrument,
             }
         },
         methods: {
+            toggleInstrument(instrument){
+                this.instrument = instrument;
+            },
+            getInstrumentClass(instrument){
+                let sClass = "icon instrument";
+                if (this.instrument == instrument)
+                {
+                    sClass += " active";
+                }
+                return sClass;
+            },
             doSave(){
                 let objOptions = {};
                 objOptions.url = '/api/user/saveprofile';
                 objOptions.action = '保存设置';
-                objOptions.json = {speed: this.speed, quest_len: this.quest_len};
+                objOptions.json = {speed: this.speed, quest_len: this.quest_len, instrument: this.instrument};
                 objOptions.func = (json) => {
                     let objProfile =  {
                         inited: true,
                         id: json.profile.id,
                         name: json.profile.name,
                         speed: json.profile.speed,
-                        quest_len: json.profile.quest_len
+                        quest_len: json.profile.quest_len,
+                        instrument: json.profile.instrument,
                     };
                     this.$store.dispatch(types.SET_PROFILE, objProfile);
                     alert('保存完毕');
@@ -72,5 +93,11 @@
 </script>
 
 <style scoped>
-
+    .instrument {
+        width: 100px;
+        height: 100px;
+    }
+    .active {
+        border: 1px solid;
+    }
 </style>
